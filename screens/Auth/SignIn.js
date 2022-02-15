@@ -16,14 +16,32 @@ import {
     ImageBackground
 } from 'react-native';
 
-import { COLORS, FONTS, icons, images, SIZES } from '../constants';
-
+import { COLORS, FONTS, icons, images, SIZES } from '../../constants';
 import LinearGradient from 'react-native-linear-gradient';
-
-const SignUp = ( { navigation } ) => {
+import { AuthContext } from '../../components/context';
+const SignIn = ( { navigation } ) => {
 
     const [showPassword, setShowPassword] = React.useState(false)
-
+    const [data, setData] = React.useState({
+        username: '',
+        password: '',
+    });
+    const textInputChange = (val) => {
+        setData({
+            ...data,
+            username: val,
+        });
+    }
+    const handlePasswordChange = (val) => {
+        setData({
+            ...data,
+            password: val,
+        });
+    }
+    const  { signIn }  = React.useContext(AuthContext);
+    const loginHandle = (data) => {
+        signIn(data)
+    }
     React.useEffect(()=> {
         fetch("https://restcountries.eu/rest/v2/all")
         .then( response => response.json())
@@ -95,7 +113,7 @@ const SignUp = ( { navigation } ) => {
                 <View style={{
                     marginTop: SIZES.padding * 3
                 }}>
-                    <Text style={styles.title}>Full name</Text>
+                    <Text style={styles.title}>Tên đăng nhập</Text>
                     <TextInput 
                         style={{
                             marginVertical: SIZES.padding,
@@ -105,9 +123,10 @@ const SignUp = ( { navigation } ) => {
                             color: COLORS.white,
                             ...FONTS.body3
                         }}
-                        placeholder="Enter Full Name"
+                        placeholder="Vui lòng nhập ..."
                         placeholderTextColor={COLORS.white}
                         selectionColor={COLORS.white}
+                        onChangeText={(val) => textInputChange(val)}
                     />
                 </View>
 
@@ -115,7 +134,7 @@ const SignUp = ( { navigation } ) => {
                 <View style={{
                     marginTop: SIZES.padding * 2
                 }}>
-                    <Text style={styles.title}>Password</Text>
+                    <Text style={styles.title}>Mật khẩu</Text>
                     <TextInput 
                         style={{
                             marginVertical: SIZES.padding,
@@ -125,10 +144,11 @@ const SignUp = ( { navigation } ) => {
                             color: COLORS.white,
                             ...FONTS.body3
                         }}
-                        placeholder="Enter Full Password"
+                        placeholder="Vui lòng nhập ..."
                         placeholderTextColor={COLORS.white}
                         selectionColor={COLORS.white}
                         secureTextEntry={!showPassword}
+                        onChangeText={(val) => handlePasswordChange(val)}
                     />
                     <TouchableOpacity
                         style={{
@@ -165,7 +185,7 @@ const SignUp = ( { navigation } ) => {
                         alignItems: 'center',
                         justifyContent: 'center'
                     }}
-                    onPress={() => navigation.navigate('Home')}
+                    onPress={() => {loginHandle( data )}}
                 >
                     <Text style={{color: COLORS.white, ...FONTS.h4}}>ĐĂNG NHẬP</Text>
                 </TouchableOpacity>
@@ -206,4 +226,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default SignUp;
+export default SignIn;

@@ -1,9 +1,7 @@
 import Home from "./Home";
-import Scan from "./Scan";
-import SignUp from "./SignUp";
+import SignIn from "./Auth/SignIn";
 
 export {
     Home,
-    Scan,
-    SignUp
+    SignIn
 }

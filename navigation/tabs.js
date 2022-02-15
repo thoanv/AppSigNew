@@ -11,7 +11,8 @@ import Svg, {Path} from 'react-native-svg';
 import { isIphoneX } from 'react-native-iphone-x-helper';
 
 import Home from '../screens/Home';
-import Scan from '../screens/Scan';
+import Profile from '../screens/Profile';
+import Notification from '../screens/Notification';
 import { COLORS, icons } from '../constants';
 
 const Tab = createBottomTabNavigator();
@@ -147,13 +148,13 @@ const Tabs = () => {
 
                 }}
             />
-            <Tab.Screen 
-                name="Scan" 
-                component={Scan}
+            <Tab.Screen
+                name="Notification"
+                component={Notification}
                 options={{
                     tabBarIcon:({ focused }) => (
-                        <Image 
-                            source={icons.scan}
+                        <Image
+                            source={icons.bell}
                             resizeMode="contain"
                             style={{
                                 width: 25,
@@ -164,14 +165,12 @@ const Tabs = () => {
                     ),
                     tabBarButton: (props) => (
                         <TabBarCustomButton {...props}/>
-                    ),
-                    headerShown: false
+                    )
                 }}
-
             />
             <Tab.Screen 
-                name="User" 
-                component={Home}
+                name="Profile"
+                component={Profile}
                 options={{
                     tabBarIcon:({ focused }) => (
                         <Image 
