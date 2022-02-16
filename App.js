@@ -10,7 +10,7 @@ import Detail from './screens/Detail';
 import BookDetail from './screens/BookDetail';
 import Notification from './screens/Notification';
 import Profile from './screens/Profile';
-import { GET_LOGIN, POST_LOGIN } from './screens/ultils/api'
+import { GET_LOGIN, POST_LOGIN } from './screens/ultils/api';
 const theme = {
   ...DefaultTheme,
   colors: {

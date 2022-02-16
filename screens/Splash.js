@@ -16,6 +16,9 @@ const Splash = () => {
                 <Image
                     source={images.logo_hpl}
                     resizeMode="contain"
+                    style={{
+                        width: 500,
+                    }}
                 />
             </View>
 

@@ -17,6 +17,11 @@ const send = require("../assets/icons/send.png");
 const user = require("../assets/icons/user.png");
 const wallet = require("../assets/icons/wallet.png");
 const search = require("../assets/icons/search_icon.png");
+const task = require("../assets/icons/task.png");
+const proccess = require("../assets/icons/proccess.png");
+const pdf = require("../assets/icons/pdf.png");
+const black_user = require("../assets/icons/black-user.png");
+const clock = require("../assets/icons/clock.png");
 
 export default {
     back,
@@ -37,5 +42,10 @@ export default {
     send,
     user,
     wallet,
-    search
+    search,
+    proccess,
+    task,
+    pdf,
+    black_user,
+    clock
 }
