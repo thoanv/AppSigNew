@@ -22,6 +22,11 @@ const proccess = require("../assets/icons/proccess.png");
 const pdf = require("../assets/icons/pdf.png");
 const black_user = require("../assets/icons/black-user.png");
 const clock = require("../assets/icons/clock.png");
+const signature = require("../assets/icons/signature.png");
+const process = require("../assets/icons/process.png");
+const download = require("../assets/icons/download.png");
+const signature_pen = require("../assets/icons/signature_pen.png");
+const check_green = require("../assets/icons/check_green.png");
 
 export default {
     back,
@@ -47,5 +52,10 @@ export default {
     task,
     pdf,
     black_user,
-    clock
+    clock,
+    signature,
+    process,
+    download,
+    signature_pen,
+    check_green
 }

@@ -165,7 +165,8 @@ const Tabs = () => {
                     ),
                     tabBarButton: (props) => (
                         <TabBarCustomButton {...props}/>
-                    )
+                    ),
+                    headerShown: false
                 }}
             />
             <Tab.Screen 
@@ -185,7 +186,8 @@ const Tabs = () => {
                     ),
                     tabBarButton: (props) => (
                         <TabBarCustomButton {...props}/>
-                    )
+                    ),
+                    headerShown: false
                 }}
             />
         </Tab.Navigator>

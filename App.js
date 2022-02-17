@@ -4,12 +4,16 @@ import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthContext } from './components/context';
 import SignIn from './screens/Auth/SignIn';
-import Tabs from './navigation/tabs';
 import Splash from './screens/Splash';
-import Detail from './screens/Detail';
+
+import Tabs from './navigation/tabs';
 import BookDetail from './screens/BookDetail';
 import Notification from './screens/Notification';
 import Profile from './screens/Profile';
+
+import Detail from './screens/Signatures/Detail';
+import Signature from './screens/Signatures/Signature';
+
 import { GET_LOGIN, POST_LOGIN } from './screens/ultils/api';
 const theme = {
   ...DefaultTheme,
@@ -97,11 +101,6 @@ export default function App({ navigation }) {
             },
             signOut: () => dispatch({ type: 'SIGN_OUT' }),
             signUp: async (data) => {
-              // In a production app, we need to send user data to server and get a token
-              // We will also need to handle errors if sign up failed
-              // After getting token, we need to persist the token using `SecureStore` or any other encrypted storage
-              // In the example, we'll use a dummy token
-
               dispatch({ type: 'SIGN_IN', token: 'dummy-auth-token' });
             },
           }),
@@ -125,6 +124,7 @@ export default function App({ navigation }) {
                 <Stack.Screen name="BookDetail" component={BookDetail} options={{ headerShown: false}}/>
                 <Stack.Screen name="Notification" component={Notification} options={{ headerShown: false}}/>
                 <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false}}/>
+                <Stack.Screen name="Signature" component={Signature} options={{ headerShown: false}}/>
                 </>
              )}
             </Stack.Navigator>

@@ -42,29 +42,6 @@ const SignIn = ( { navigation } ) => {
     const loginHandle = (data) => {
         signIn(data)
     }
-    React.useEffect(()=> {
-        fetch("https://restcountries.eu/rest/v2/all")
-        .then( response => response.json())
-        .then(data => {
-            let areData = data.map( item => {
-                return {
-                    code: item.alpha2Code,
-                    name: item.name,
-                    callingCode: `+${item.callingCodes[0]}`,
-                    flag: `https://www.countryflags.io/${item.alpha2Code}/flat/64.png`
-                }
-            })
-            setAreas(areData);
-
-            if(areData.length > 0){
-                let defaultData = areData.filter(a=> a.code == "VN")
-
-                if(defaultData.length > 0){
-                    setSelectedAreas(defaultData[0])
-                }
-            }
-        })
-    }, [])
 
     function renderHeader() {
         return (
