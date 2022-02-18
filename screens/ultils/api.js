@@ -1,7 +1,6 @@
 import { BASE_URL } from './config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 exports.POST_LOGIN = function (url, data) {
-console.log(data);
   return new Promise(async (resolve) => {
     fetch(`${BASE_URL}${url}`, {
       method: "POST",
@@ -44,7 +43,7 @@ exports.GET_LOGIN = function(url) {
     });
   })
 }
-exports.GET_DATA = function(url, data) {
+exports.GET_DATA = function(url) {
   return new Promise(async (resolve) => {
     let token = await AsyncStorage.getItem('userToken');
     fetch(`${BASE_URL}${url}`, {
@@ -55,6 +54,7 @@ exports.GET_DATA = function(url, data) {
         'Authorization': 'Bearer ' + token,
       },
     }).then((res) => {
+      console.log(res)
       return res.json()
     }).then((responseData) => {
       return resolve(responseData);
@@ -65,5 +65,31 @@ exports.GET_DATA = function(url, data) {
       );
       throw error;
     });
+  })
+}
+exports.POST_DATA = function (url, data) {
+  return new Promise(async (resolve) => {
+    let token = await AsyncStorage.getItem('userToken');
+    console.log(JSON.stringify(data))
+    console.log(url)
+    fetch(`${BASE_URL}${url}`, {
+      method: "POST",
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      },
+      body: JSON.stringify(data)
+    }).then((res) => {
+      return res.json()
+    }).then((responseData) => {
+      return resolve(responseData);
+    }).catch(function (error) {
+        console.log(
+          'There has been a problem with your fetch operation: ' +
+          error.message,
+        );
+        throw error;
+      });
   })
 }

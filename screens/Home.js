@@ -144,7 +144,10 @@ const Home = ({navigation}) => {
                     marginRight: SIZES.base,
                     marginVertical: SIZES.base
                 }}
-                onPress={()=> navigation.navigate("Detail")}
+                onPress={()=> navigation.navigate("Detail",{
+                    ID_RPA: value.ID_RPA,
+                    ID_TASK: value.ID_TASK
+                })}
             >
                 <View style={styles.cardShadow}>
                      <View style={styles.cardContainer}>
