@@ -26,12 +26,9 @@ const Signature = ({ route, navigation }) => {
     const [scrollViewWholeHeight, setScrollViewWholeHeight] = React.useState(1);
     const [scrollViewVisibleHeight, setScrollViewVisibleHeight] = React.useState(0);
     const indicator = new Animated.Value(0);
-
-
-
     function renderBookInfoSection() {
         return (
-            <View style={{flex: 1, backgroundColor: COLORS.primary}}>
+            <View style={{flex: 1, backgroundColor: COLORS.white}}>
             
                 {/* Color Overlay */}
                 <View
@@ -120,18 +117,18 @@ const Signature = ({ route, navigation }) => {
 
     function renderBottomButton () {
         return (
-            <View style={{flex: 1, flexDirection: 'row', backgroundColor: COLORS.primary}}>
+            <View style={{flex: 1, flexDirection: 'row', backgroundColor: COLORS.white}}>
 
                 {/* Start Reading */}
                 <TouchableOpacity
                     style={{
                         flex: 1,
                         backgroundColor: COLORS.oragin,
-                        marginHorizontal: SIZES.base,
+                        marginHorizontal: SIZES.largeTitle,
                         marginVertical: SIZES.base,
                         borderRadius: SIZES.base,
                         alignItems: 'center',
-                        justifyContent: 'center'
+                        justifyContent: 'center',
                     }}
                     onPress = {() => console.log("Start Reading")}
                 >
@@ -140,12 +137,12 @@ const Signature = ({ route, navigation }) => {
                             source={icons.signature}
                             resizeMode="contain"
                             style={{
-                                width: 25,
-                                height: 25,
+                                width: 20,
+                                height: 20,
                                 tintColor: COLORS.white
                             }}
                         />
-                        <Text style={{color: COLORS.white, ...FONTS.h3, marginLeft: SIZES.base}}>Xác nhận ký</Text>
+                        <Text style={{color: COLORS.white, ...FONTS.body4, marginLeft: SIZES.base}}>Xác nhận ký</Text>
 
                     </View>
                 </TouchableOpacity>

@@ -22,7 +22,6 @@ const height_screen  = Dimensions.get('window').height;
 const Detail = ({ route, navigation }) => {
     const [data, setData] = useState([]);
     const [isModalVisible, setModalVisible] = useState(false);
-        const modalAnimatedValue = useRef(new Animated.Value(0)).current;
     React.useEffect(() => {
         let id_rpa = route.params.ID_RPA;
         let id_task = route.params.ID_TASK;
@@ -52,7 +51,7 @@ const Detail = ({ route, navigation }) => {
     const toggleModal = () => {
         console.log(isModalVisible)
         setModalVisible(!isModalVisible);
-        if(isModalVisible){
+        if(!isModalVisible){
             Animated.timing(fadeAnim, {
                 toValue: 1,
                 duration: 500,
@@ -128,7 +127,6 @@ const Detail = ({ route, navigation }) => {
             </View>
         )
     }
-
     function renderTitle() {
         const previouStage = () => {
             let previous = data.PREVIOUS_STAGE;
@@ -203,7 +201,6 @@ const Detail = ({ route, navigation }) => {
             </View>
         )
     }
-
     function renderInfoTask() {
         let created_at = data.CREATED_BY;
         if(created_at) {
@@ -272,12 +269,18 @@ const Detail = ({ route, navigation }) => {
                         <View style={{flexDirection:'row'}}>
                             <TouchableOpacity
                                 style={styles.button}
+                                onPress={()=> navigation.navigate("Signature", {
+                                    path: item,
+                                    rpa: data.ID_RPA,
+                                    task: data.ID_TASK,
+                                })}
                             >
                                 <Text style={{color: COLORS.primary, fontWeight: 'bold'}}>Trình ký</Text>
                             </TouchableOpacity>
                             <Dot/>
                             <TouchableOpacity
                                 style={styles.button}
+                                onPress={()=> navigation.navigate("Signature")}
                             >
                                 <Text style={{color: COLORS.primary, fontWeight: 'bold'}}>Tải xuống</Text> 
                             </TouchableOpacity>
@@ -391,7 +394,6 @@ const Detail = ({ route, navigation }) => {
             </View>
         )
     }
-    
     function itemTaskUser(icon, title, value, login, position= '') {
         return (
             <View
@@ -452,8 +454,6 @@ const Detail = ({ route, navigation }) => {
         )
     }
     function renderBottomButton () {
-        
-        
         return (
             <View style={{flex: 1, flexDirection: 'row', backgroundColor: COLORS.white, borderTopColor: COLORS.border, borderTopWidth: 1}}>
               
@@ -470,18 +470,36 @@ const Detail = ({ route, navigation }) => {
                     }}
                     onPress={toggleModal}
                 >
-                    <View style={{flexDirection: 'row'}}>
-                    <Image
-                        source={icons.up_down}
-                        resizeMode="cover"
-                        style= {{
-                            width: 15,
-                            height: 15,
-                            tintColor: COLORS.white
-                        }}
-                    />
+                {!isModalVisible && (
+                    <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+                        <Image
+                            source={icons.up_down}
+                            resizeMode="cover"
+                            style= {{
+                                width: 15,
+                                height: 15,
+                                tintColor: COLORS.white
+                            }}
+                        />
+
                         <Text style={{color: COLORS.white, ...FONTS.body4, marginLeft: SIZES.base}}>Xác nhận ký</Text>
                     </View>
+                ) }
+                {isModalVisible && (
+                    <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+                        <Image
+                            source={icons.close}
+                            resizeMode="cover"
+                            style= {{
+                                width: 15,
+                                height: 15,
+                                tintColor: COLORS.white
+                            }}
+                        />
+
+                        <Text style={{color: COLORS.white, ...FONTS.body4, marginLeft: SIZES.base}}>Đóng</Text>
+                    </View>
+                ) }
                 </TouchableOpacity>
             </View>
         )
@@ -492,7 +510,8 @@ const Detail = ({ route, navigation }) => {
                 {renderHeader()}
             </View>
             <View style={{flex: 10}}>
-                <ScrollView>
+                <ScrollView style={{flexGrow: 1}}
+                                 nestedScrollEnabled={true}>
                     {renderTitle()}
                     {renderInfoTask()}
                     {(data.TOTAL_FILE > 0) && (renderFileSignature())}
@@ -508,11 +527,32 @@ const Detail = ({ route, navigation }) => {
                 {
                     // Bind opacity to animated value
                     opacity: fadeAnim,
-                    top: modalY,
+                    bottom: 60,
                 }
                 ]}
             >
-                <Text style={styles.fadingText}>Fading View!</Text>
+                <View>
+                    <View style={styles.stage}>
+                        <TouchableOpacity style={styles.itemStage}>
+                            <Text style={{color: 'green', ...FONTS.body4}}>Trưởng ban công nghệ</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.stage}>
+                       <TouchableOpacity style={styles.itemStage}>
+                           <Text style={{color: 'green', ...FONTS.body4}}>Trưởng bộ phận</Text>
+                       </TouchableOpacity>
+                    </View>
+                    <View style={styles.stage}>
+                       <TouchableOpacity style={styles.itemStage}>
+                           <Text style={{color: 'green', ...FONTS.body4}}>Xác nhận công</Text>
+                       </TouchableOpacity>
+                    </View>
+                    <View style={styles.stage}>
+                       <TouchableOpacity style={styles.itemStage}>
+                           <Text style={{color: 'green', ...FONTS.body4}}>Trưởng phòng HCNS</Text>
+                       </TouchableOpacity>
+                    </View>
+                </View>
             </Animated.View>
             
         </SafeAreaView>
@@ -554,17 +594,30 @@ const styles = StyleSheet.create({
     },
  
     fadingContainer: {
-        padding: 20,
-        backgroundColor: "powderblue",
+        borderTopRightRadius: 20,
+        borderTopLeftRadius: 20,
+        paddingTop: 5,
+        backgroundColor: COLORS.white,
         position: 'absolute',
         left: 0,
         width: '100%',
-        zIndex: 0
+        zIndex: 0,
+        borderTopWidth: 1,
+        borderTopColor: COLORS.border,
 
-      },
-      fadingText: {
+    },
+    fadingText: {
         fontSize: 28
-      },
+    },
+    stage:{
+        borderBottomWidth: 1,
+        borderBottomColor: COLORS.border,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    itemStage:{
+        paddingVertical: 10
+    }
 })
 
 export default Detail;
