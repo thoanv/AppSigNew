@@ -1,24 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef  } from 'react';
 import {
     View,
     Text,
     StyleSheet,
-    ImageBackground,
     TouchableOpacity,
     Image,
     ScrollView,
-    Animated,
     Dimensions,
-    Button,
-    FlatList
+    SafeAreaView,
+    FlatList,
+    Animated,
+    Button
 } from 'react-native';
 import { COLORS, FONTS, icons, SIZES } from '../../constants';
 import BorderHorizontal from '../../components/borderHorizontal';
 import Dot from '../../components/dot';
 import { GET_DATA, POST_DATA } from '../ultils/api';
+import Modal from "react-native-modal";
 const width_screen  = Dimensions.get('window').width;
+const height_screen  = Dimensions.get('window').height;
 const Detail = ({ route, navigation }) => {
     const [data, setData] = useState([]);
+    const [isModalVisible, setModalVisible] = useState(false);
+        const modalAnimatedValue = useRef(new Animated.Value(0)).current;
     React.useEffect(() => {
         let id_rpa = route.params.ID_RPA;
         let id_task = route.params.ID_TASK;
@@ -30,12 +34,38 @@ const Detail = ({ route, navigation }) => {
         POST_DATA(`${url}`, payload).then(res => {
             if(res['success'] == 1){
                 setData(res['data'])
+                // console.log(data)
             }
          }).catch((error)=>{
             console.log("Api call error");
             alert(error.message);
          });
     }, [])
+
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+
+    const modalY = fadeAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange : [height_screen, height_screen - 138]
+
+    })
+    const toggleModal = () => {
+        console.log(isModalVisible)
+        setModalVisible(!isModalVisible);
+        if(isModalVisible){
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 500,
+                useNativeDriver: false,
+                }).start();
+        }else{
+            Animated.timing(fadeAnim, {
+                toValue: 0,
+                duration: 1000,
+                useNativeDriver: false,
+                }).start();
+        }
+    };
     function renderHeader() {
         return (
             <View style={{flex: 1, backgroundColor: COLORS.white, borderBottomColor: COLORS.darkgrayText, borderBottomWidth: 1}}>
@@ -100,6 +130,43 @@ const Detail = ({ route, navigation }) => {
     }
 
     function renderTitle() {
+        const previouStage = () => {
+            let previous = data.PREVIOUS_STAGE;
+            if(previous){
+                return (
+                    <View style={{flexDirection: 'row'}}>
+                        <View style={{marginRight: SIZES.base, borderColor: COLORS.darkgray, borderWidth: 1, borderRadius: 10, paddingHorizontal: 5}}>
+                            <Text style={{ ...FONTS.body5 }}>
+                                {previous.NAME}
+                            </Text>
+                        </View>
+                        <View style={{ justifyContent: 'center'}}>
+                            <Image
+                                source={icons.right_arrow}
+                                style={{
+                                    width: 15,
+                                    height: 15,
+                                    tintColor: COLORS.black,
+                                }}
+                            />
+                        </View>
+                    </View>
+                )
+            }
+            
+        }
+        const stage = () => {
+            let stage = data.STAGE;
+            if(stage){
+                return (
+                    <View style={{ marginLeft: SIZES.base,  borderColor: COLORS.darkgray, borderWidth: 1, borderRadius: 10, paddingHorizontal: 5}}>
+                        <Text style={{ ...FONTS.body5 }}>
+                            {data.STAGE.NAME}
+                        </Text>
+                    </View>
+                )
+            }
+        }
         return (
             <View style={{flexDirection: 'row', marginBottom: SIZES.base}}>
                 {/* Custom Scrollbar */}
@@ -121,28 +188,15 @@ const Detail = ({ route, navigation }) => {
                         >
                             <View style={{flex: 1, backgroundColor: COLORS.white}}>
                                 <Text style={{...FONTS.body4}}>
-                                Giai đoạn: Trưởng phòng duyệt
+                                    Giai đoạn:
                                 </Text>
-                                <Text style={{color: COLORS.gray, ...FONTS.body4 }}>
-
-                                </Text>
+                                <View style={{flexDirection: 'row', marginTop: SIZES.base}}>
+                                    {previouStage()}
+                                    {stage()}
+                                </View>
+                                
                             </View>
-                            <View
-                                style={{
-                                    flexDirection: 'row',
-                                    height: '100%',
-                                    alignItems: 'center'
-                                }}
-                            >
-                                <Image
-                                    source={icons.right_arrow}
-                                    style={{
-                                        width: 15,
-                                        height: 15,
-                                        tintColor: COLORS.gray
-                                    }}
-                                />
-                            </View>
+                            
                         </View>
                     </View>
                 </View>
@@ -176,32 +230,44 @@ const Detail = ({ route, navigation }) => {
             )
         }
     }
-
-    
     function renderFileSignature() {
         const renderItemFile = ({item})=> {
-            // console.log(item)
             return (
-                <View style={{paddingVertical: SIZES.base, flexDirection: 'row'}}>
+                <View style={{paddingVertical: SIZES.base, flexDirection: 'row', width: '100%'}}>
                     <View>
-                        <Image
-                            source={icons.pdf}
-                            resizeMode="cover"
-                            style= {{
-                                width: 45,
-                                height: 45,
-                                marginRight: SIZES.base*2,
-                            }}
-                        />
-                        
+                        <View>
+                            <Image
+                                source={icons.pdf}
+                                resizeMode="cover"
+                                style= {{
+                                    width: 45,
+                                    height: 45,
+                                    marginRight: SIZES.base*2,
+                                }}
+                            />
+                            </View>
+                            {item.CHECK && (
+                                <Image
+                                source={icons.check_green}
+                                resizeMode="cover"
+                                style= {{
+                                    width: 18,
+                                    height: 18,
+                                    position: 'absolute',
+                                    right: 10,
+                                    top: -5,
+                                }}
+                            />
+                            )}
+                            
                     </View>
-                        
-                    <View style={{width: '83%',borderBottomColor: COLORS.darkgray, borderBottomWidth: 1, paddingBottom: SIZES.base}}>
+                   
+                    <View>
                         <Text>{item.NAME} </Text>
                         <View style={{flexDirection: 'row', marginBottom: 5}}>
-                            <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>100KB</Text>
+                            <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>{item.SIZE}</Text>
                             <Dot/>
-                            <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>20:12 12/12/2022</Text>
+                            <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>{item.CREATED_TIME}</Text>
                         </View>
                         <View style={{flexDirection:'row'}}>
                             <TouchableOpacity
@@ -213,7 +279,6 @@ const Detail = ({ route, navigation }) => {
                             <TouchableOpacity
                                 style={styles.button}
                             >
-                                
                                 <Text style={{color: COLORS.primary, fontWeight: 'bold'}}>Tải xuống</Text> 
                             </TouchableOpacity>
                         </View>
@@ -233,11 +298,10 @@ const Detail = ({ route, navigation }) => {
                             backgroundColor: COLORS.white,
                         }, styles.shadow]}
                     >
-                        <Text style={{...FONTS.body3, fontWeight: 'bold', textTransform: 'uppercase'}}>Tài liệu đính kèm (2)</Text>
+                        <Text style={{...FONTS.body3, fontWeight: 'bold', textTransform: 'uppercase'}}>Tài liệu đính kèm ({data.TOTAL_FILE})</Text>
                         <BorderHorizontal/>
                   
                         <FlatList
-                            horizontal
                             showsHorizontalScrollIndicator={false}
                             renderItem={renderItemFile}
                             data={data.FILES}
@@ -250,6 +314,58 @@ const Detail = ({ route, navigation }) => {
         )
     }
     function renderUserSignature() {
+        const renderItemUser = ({item}) => {
+            if(item.INFORMATION){
+                let user = item.INFORMATION;
+                return (
+                    <View style={{paddingVertical: SIZES.base, flexDirection: 'row'}}>
+                        <View>
+                            <View style={styles.profileImgContainer}>
+                                <Image
+                                    source={{ uri:user.PATH }}
+                                    resizeMode="cover"
+                                    style= {{
+                                        width: 45,
+                                        height: 45,
+                                        marginRight: SIZES.base*2
+                                    }, styles.profileImg}
+                                />
+                            </View>
+                            {(data.TOTAL_FILE == item.FILE_SIGNATURE) && (
+                                <Image
+                                source={icons.check_green}
+                                resizeMode="cover"
+                                style= {{
+                                    width: 20,
+                                    height: 20,
+                                    position: 'absolute',
+                                    right: 10,
+                                    top: -5,
+                                }}
+                            />
+                            )}
+                            
+                        </View>
+                            
+                        <View style={{paddingBottom: SIZES.base}}>
+                            <View style={{flexDirection: 'row'}}>
+                                <Text style={{fontWeight: 'bold'}}>{user.LAST_NAME} {user.NAME} </Text>
+                                <Dot />
+                                <Text style={{fontWeight: 'bold'}}>@{user.LOGIN}</Text>
+                            </View>
+                            
+                            <View style={{flexDirection: 'row'}}>
+                                <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>{user.WORK_POSITION ? user.WORK_POSITION : 'Nhân viên'}</Text>
+                                
+                            </View>
+                            
+                        </View>
+                        
+                    </View>
+                )
+            }
+           
+        }
         return (
             <View style={{flexDirection: 'row', marginBottom: SIZES.base}}>
                 {/* Custom Scrollbar */}
@@ -263,90 +379,13 @@ const Detail = ({ route, navigation }) => {
                     >
                         <Text style={{...FONTS.body3, fontWeight: 'bold', textTransform: 'uppercase'}}>Người xét duyệt</Text>
                         <BorderHorizontal/>
-                  
-                        
-                        <View style={{paddingVertical: SIZES.base, flexDirection: 'row'}}>
-                            <View>
-                                <View style={styles.profileImgContainer}>
-                                    <Image
-                                        source={{ uri:"https://haiphatland-bitrix24.s3.ap-southeast-1.amazonaws.com/resize_cache/18476/7acf4cadf975128573a8b1c2766af5d8/main/368/368edeb236f40dd77fc67cc80457f7b5/thoa.png" }}
-                                        resizeMode="cover"
-                                        style= {{
-                                            width: 45,
-                                            height: 45,
-                                            marginRight: SIZES.base*2
-                                        }, styles.profileImg}
-                                    />
-                                </View>
-                                
-                                <Image
-                                    source={icons.check_green}
-                                    resizeMode="cover"
-                                    style= {{
-                                        width: 20,
-                                        height: 20,
-                                        position: 'absolute',
-                                        right: 10,
-                                        top: -5,
-                                    }}
-                                />
-                            </View>
-                                
-                            <View style={{paddingBottom: SIZES.base}}>
-                                <View style={{flexDirection: 'row'}}>
-                                    <Text style={{fontWeight: 'bold'}}>NGuyễn Văn Thỏa </Text>
-                                    <Dot />
-                                    <Text style={{fontWeight: 'bold'}}>@thoanv</Text>
-                                </View>
-                                <View style={{flexDirection: 'row'}}>
-                                    <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>Chuyên viên phát triển  phần mềm</Text>
-                                    
-                                </View>
-                                
-                            </View>
-                            
-                        </View>
-                        <View style={{paddingVertical: SIZES.base, flexDirection: 'row'}}>
-                            <View>
-                                <View style={styles.profileImgContainer}>
-                                    <Image
-                                        source={{ uri:"https://haiphatland-bitrix24.s3.ap-southeast-1.amazonaws.com/resize_cache/18476/7acf4cadf975128573a8b1c2766af5d8/main/368/368edeb236f40dd77fc67cc80457f7b5/thoa.png" }}
-                                        resizeMode="cover"
-                                        style= {{
-                                            width: 45,
-                                            height: 45,
-                                            marginRight: SIZES.base*2
-                                        }, styles.profileImg}
-                                    />
-                                </View>
-                                
-                                <Image
-                                    source={icons.check_green}
-                                    resizeMode="cover"
-                                    style= {{
-                                        width: 20,
-                                        height: 20,
-                                        position: 'absolute',
-                                        right: 10,
-                                        top: -5,
-                                    }}
-                                />
-                            </View>
-                                
-                            <View style={{paddingBottom: SIZES.base}}>
-                                <View style={{flexDirection: 'row'}}>
-                                    <Text style={{fontWeight: 'bold'}}>NGuyễn Văn Thỏa </Text>
-                                    <Dot />
-                                    <Text style={{fontWeight: 'bold'}}>@thoanv</Text>
-                                </View>
-                                <View style={{flexDirection: 'row'}}>
-                                    <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>Chuyên viên phát triển  phần mềm</Text>
-                                    
-                                </View>
-                                
-                            </View>
-                            
-                        </View>
+                        <FlatList
+                            showsHorizontalScrollIndicator={false}
+                            renderItem={renderItemUser}
+                            data={data.USER_SIGS}
+                            keyExtractor={(item, index) => index.toString()}
+                        />
+                      
                     </View>
                 </View>
             </View>
@@ -413,9 +452,11 @@ const Detail = ({ route, navigation }) => {
         )
     }
     function renderBottomButton () {
+        
+        
         return (
-            <View style={{flex: 1, flexDirection: 'row', backgroundColor: COLORS.white, borderTopColor: COLORS.darkgrayText, borderTopWidth: 1}}>
-
+            <View style={{flex: 1, flexDirection: 'row', backgroundColor: COLORS.white, borderTopColor: COLORS.border, borderTopWidth: 1}}>
+              
                 {/* Start Reading */}
                 <TouchableOpacity
                     style={{
@@ -427,34 +468,54 @@ const Detail = ({ route, navigation }) => {
                         alignItems: 'center',
                         justifyContent: 'center',
                     }}
-                    onPress = {() => console.log("Start Reading")}
+                    onPress={toggleModal}
                 >
                     <View style={{flexDirection: 'row'}}>
+                    <Image
+                        source={icons.up_down}
+                        resizeMode="cover"
+                        style= {{
+                            width: 15,
+                            height: 15,
+                            tintColor: COLORS.white
+                        }}
+                    />
                         <Text style={{color: COLORS.white, ...FONTS.body4, marginLeft: SIZES.base}}>Xác nhận ký</Text>
-
                     </View>
                 </TouchableOpacity>
             </View>
         )
     }
     return (
-        <View style={styles.container}>
+        <SafeAreaView  style={styles.container}>
             <View style={{flex: 1}}>
                 {renderHeader()}
             </View>
-            <View style={{flex: 9}}>
+            <View style={{flex: 10}}>
                 <ScrollView>
                     {renderTitle()}
                     {renderInfoTask()}
-                    {renderFileSignature()}
+                    {(data.TOTAL_FILE > 0) && (renderFileSignature())}
                     {renderUserSignature()}
                 </ScrollView>
-               
             </View>
             <View style={{height: 60, marginBottom: 0}}>
                 {renderBottomButton()}
             </View>
-        </View>
+            <Animated.View
+                style={[
+                styles.fadingContainer,
+                {
+                    // Bind opacity to animated value
+                    opacity: fadeAnim,
+                    top: modalY,
+                }
+                ]}
+            >
+                <Text style={styles.fadingText}>Fading View!</Text>
+            </Animated.View>
+            
+        </SafeAreaView>
     )
 
 }
@@ -478,16 +539,32 @@ const styles = StyleSheet.create({
     profileImgContainer: {
         marginRight: SIZES.base*2,
         
-      },
-      profileImg: {
+    },
+    profileImg: {
         height: 45,
         width: 45,
         borderRadius: 45,
-        borderColor: COLORS.darkgrayText,
+        borderColor: COLORS.border,
         borderWidth: 1,
         padding: 1,
-      },
+    },
+    borderBottom:{
+        borderBottomColor: COLORS.darkgray, 
+        borderBottomWidth: 1, 
+    },
  
+    fadingContainer: {
+        padding: 20,
+        backgroundColor: "powderblue",
+        position: 'absolute',
+        left: 0,
+        width: '100%',
+        zIndex: 0
+
+      },
+      fadingText: {
+        fontSize: 28
+      },
 })
 
 export default Detail;

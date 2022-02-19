@@ -27,6 +27,9 @@ const process = require("../assets/icons/process.png");
 const download = require("../assets/icons/download.png");
 const signature_pen = require("../assets/icons/signature_pen.png");
 const check_green = require("../assets/icons/check_green.png");
+const user_avatar = require("../assets/icons/user_avatar.png");
+const right_arrow = require("../assets/icons/right-arrow.png");
+const up_down = require("../assets/icons/up_down.png");
 
 export default {
     back,
@@ -57,5 +60,8 @@ export default {
     process,
     download,
     signature_pen,
-    check_green
+    check_green,
+    user_avatar,
+    right_arrow,
+    up_down
 }
