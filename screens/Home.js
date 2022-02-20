@@ -202,7 +202,11 @@ const Home = ({navigation}) => {
                     <View style={{paddingHorizontal: SIZES.padding, flexDirection: 'row', justifyContent: 'space-between'}}>
                         <Text style={{color: COLORS.black, ...FONTS.h4}}>{item.TITLE}</Text>
 
-                        <TouchableOpacity onPress={()=> {console.log("See more")}}>
+                        <TouchableOpacity
+                            onPress={()=> navigation.navigate("List", {
+                                ID_RPA: 43
+                            })}
+                        >
                             <Text style={{color: COLORS.primary, ...FONTS.body4, alignSelf: 'flex-start', marginRight: SIZES.base}}>Xem thêm ></Text>
                         </TouchableOpacity>
                     </View>

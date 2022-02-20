@@ -30,6 +30,7 @@ const check_green = require("../assets/icons/check_green.png");
 const user_avatar = require("../assets/icons/user_avatar.png");
 const right_arrow = require("../assets/icons/right-arrow.png");
 const up_down = require("../assets/icons/up_down.png");
+const file = require("../assets/icons/file.png");
 
 export default {
     back,
@@ -63,5 +64,6 @@ export default {
     check_green,
     user_avatar,
     right_arrow,
-    up_down
+    up_down,
+    file
 }
