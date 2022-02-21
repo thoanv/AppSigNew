@@ -70,8 +70,6 @@ exports.GET_DATA = function(url) {
 exports.POST_DATA = function (url, data) {
   return new Promise(async (resolve) => {
     let token = await AsyncStorage.getItem('userToken');
-    console.log(JSON.stringify(data))
-    console.log(url)
     fetch(`${BASE_URL}${url}`, {
       method: "POST",
       headers: {

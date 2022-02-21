@@ -43,13 +43,7 @@ const Detail = ({ route, navigation }) => {
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
-    const modalY = fadeAnim.interpolate({
-        inputRange: [0, 1],
-        outputRange : [height_screen, height_screen - 138]
-
-    })
     const toggleModal = () => {
-        console.log(isModalVisible)
         setModalVisible(!isModalVisible);
         if(!isModalVisible){
             Animated.timing(fadeAnim, {
@@ -67,7 +61,7 @@ const Detail = ({ route, navigation }) => {
     };
     function renderHeader() {
         return (
-            <View style={{flex: 1, backgroundColor: COLORS.white, borderBottomColor: COLORS.darkgrayText, borderBottomWidth: 1}}>
+            <View style={{flex: 1, backgroundColor: COLORS.white, borderBottomColor: COLORS.border, borderBottomWidth: 1}}>
             
                 {/* Color Overlay */}
                 <View
@@ -260,7 +254,7 @@ const Detail = ({ route, navigation }) => {
                     </View>
                    
                     <View>
-                        <Text>{item.NAME} </Text>
+                        <Text>{item.NAME} {item.ID} </Text>
                         <View style={{flexDirection: 'row', marginBottom: 5}}>
                             <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>{item.SIZE}</Text>
                             <Dot/>
@@ -270,12 +264,12 @@ const Detail = ({ route, navigation }) => {
                             <TouchableOpacity
                                 style={styles.button}
                                 onPress={()=> navigation.navigate("Signature", {
-                                    path: item,
                                     rpa: data.ID_RPA,
                                     task: data.ID_TASK,
+                                    file_id: item.ID
                                 })}
                             >
-                                <Text style={{color: COLORS.primary, fontWeight: 'bold'}}>Trình ký</Text>
+                                <Text style={{color: COLORS.primary, fontWeight: 'bold'}}>Ký</Text>
                             </TouchableOpacity>
                             <Dot/>
                             <TouchableOpacity
@@ -320,12 +314,13 @@ const Detail = ({ route, navigation }) => {
         const renderItemUser = ({item}) => {
             if(item.INFORMATION){
                 let user = item.INFORMATION;
+                let path = user.PATH  ? { uri:user.PATH } : icons.user
                 return (
                     <View style={{paddingVertical: SIZES.base, flexDirection: 'row'}}>
                         <View>
                             <View style={styles.profileImgContainer}>
                                 <Image
-                                    source={{ uri:user.PATH }}
+                                    source={path}
                                     resizeMode="cover"
                                     style= {{
                                         width: 45,
@@ -482,7 +477,7 @@ const Detail = ({ route, navigation }) => {
                             }}
                         />
 
-                        <Text style={{color: COLORS.white, ...FONTS.body4, marginLeft: SIZES.base}}>Xác nhận ký</Text>
+                        <Text style={{color: COLORS.white, ...FONTS.body4, marginLeft: SIZES.base}}>Xác nhận</Text>
                     </View>
                 ) }
                 {isModalVisible && (
@@ -506,6 +501,7 @@ const Detail = ({ route, navigation }) => {
     }
     return (
         <SafeAreaView  style={styles.container}>
+            
             <View style={{flex: 1}}>
                 {renderHeader()}
             </View>

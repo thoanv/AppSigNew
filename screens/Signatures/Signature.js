@@ -11,6 +11,7 @@ import {
     Dimensions
 } from 'react-native';
 import { COLORS, FONTS, icons, SIZES } from '../../constants';
+import { POST_DATA } from '../ultils/api';
 import Pdf from 'react-native-pdf';
 const LineDivider = () => {
     return (
@@ -23,12 +24,37 @@ const LineDivider = () => {
 
 const Signature = ({ route, navigation }) => {
 
-    const [scrollViewWholeHeight, setScrollViewWholeHeight] = React.useState(1);
-    const [scrollViewVisibleHeight, setScrollViewVisibleHeight] = React.useState(0);
-    const indicator = new Animated.Value(0);
-    function renderBookInfoSection() {
+    const [file, setFile] = React.useState();
+    const [signature, setSignature] = React.useState('');
+    const [localSignature, setLocalSignature] = React.useState([]);
+    const [pageCurrent, setPageCurrent] = React.useState(0);
+    const [totalPage, setTotalPage] = React.useState(0);
+    React.useEffect(() => {
+        const id_rpa = route.params.rpa;
+        const id_task = route.params.task;
+        const id_file = route.params.file_id;
+        let payload = {
+            'rpa' : id_rpa,
+            'task' : id_task,
+            'file_id': id_file,
+        };
+
+        let url = `/signature-sign.php`;
+        POST_DATA(`${url}`, payload).then(res => {
+            if(res['success'] == 1){
+                setLocalSignature(res['data']);
+                setSignature(res['signature'])
+                setFile(res['file'])
+            }
+         }).catch((error)=>{
+            console.log("Api call error");
+            alert(error.message);
+         });
+    }, [])
+
+    function renderHeader() {
         return (
-            <View style={{flex: 1, backgroundColor: COLORS.white}}>
+            <View style={{flex: 1, backgroundColor: COLORS.white, borderBottomColor: COLORS.darkgrayText, borderBottomWidth: 1}}>
             
                 {/* Color Overlay */}
                 <View
@@ -65,7 +91,7 @@ const Signature = ({ route, navigation }) => {
                     </TouchableOpacity>
 
                     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                            <Text style={{...FONTS.h3,}}>Trình ký</Text>
+                            <Text style={{...FONTS.h3,}}>Văn bản</Text>
                     </View>
 
                     <TouchableOpacity
@@ -88,36 +114,87 @@ const Signature = ({ route, navigation }) => {
             </View>
         )
     }
-
-    function renderBookDescription() {
-        const source = { uri: 'http://samples.leanpub.com/thereactnativebook-sample.pdf', cache: true };
+    function renderSignature(val){
+        console.log(val)
         return (
-            <View style={{flex: 1, flexDirection: 'row'}}>
-                {/* Custom Scrollbar */}
-                <View style={styles.container}>
-                    <Pdf
-                        source={source}
-                        onLoadComplete={(numberOfPages,filePath) => {
-                            console.log(`Number of pages: ${numberOfPages}`);
-                        }}
-                        onPageChanged={(page,numberOfPages) => {
-                            console.log(`Current page: ${page}`);
-                        }}
-                        onError={(error) => {
-                            console.log(error);
-                        }}
-                        onPressLink={(uri) => {
-                            console.log(`Link pressed: ${uri}`);
-                        }}
-                        style={styles.pdf}/>
-                </View>
+            <View style={{ position: 'absolute', top: 10, zIndex: 999999999999}}>
+                <Image 
+                    source={{uri: signature}}
+                    style={{
+                        width: 160,
+                        height: 70
+                    }}
+                />
             </View>
         )
+        
+    }
+    function renderBody() {
+        if(file){
+            const source = { uri: file.PATH, cache: true };
+            return (
+                <View style={{flex: 1, flexDirection: 'row'}}>
+                    {/* Custom Scrollbar */}
+                    <View style={styles.container}>
+                        <View style={styles.pdf}>
+                            <Pdf
+                                enablePaging = {true}
+                                ref={(pdf) => { pdf = 2; }}
+                                source={source}
+                                onLoadComplete={(numberOfPages,filePath) => {
+                                    setTotalPage(numberOfPages);
+                                }}
+                                onPageChanged={(page,numberOfPages) => {
+                                    setPageCurrent(page);
+                                }}
+                                onError={(error) => {
+                                    console.log(error);
+                                }}
+                                onPressLink={(uri) => {
+                                    console.log(`Link pressed: ${uri}`);
+                                }}
+                                style={styles.pdf}/>
+                                {
+                                    Object.entries(localSignature).map(([key, value]) => {
+                                        if(Number(key) == pageCurrent){
+                                            return Object.entries(value).map(([key_, value_]) => {
+                                                return (
+                                                    <View style={{position:'absolute', top: 10, left: 20}}>
+                                                        <Image 
+                                                            source={{uri: signature}}
+                                                            style={{
+                                                                width: 100,
+                                                                height: 50
+                                                            }}
+                                                        />
+                                                    </View>
+                                                )
+                                            })
+                                        }
+                                        
+                                    })
+                                //      Object.entries(localSignature).map(([key, value]) => {
+                                //         if(key == pageCurrent){
+                                //         Object.entries(value).map(([key_, value_]) => {
+                                //             renderSignature()
+                                //         });
+                                //     }
+                                // });
+                                }
+                               
+                                
+                        </View>
+                        
+                    </View>
+                </View>
+            )
+        }      
+       
     }
 
-    function renderBottomButton () {
+    function renderFooter () {
         return (
-            <View style={{flex: 1, flexDirection: 'row', backgroundColor: COLORS.white}}>
+            <View style={{flex: 1, flexDirection: 'row', backgroundColor: COLORS.white, borderTopColor: COLORS.border, borderTopWidth: 1}}>
 
                 {/* Start Reading */}
                 <TouchableOpacity
@@ -154,15 +231,15 @@ const Signature = ({ route, navigation }) => {
         <View style={styles.container}>
             {/* Book Cover Section */}
             <View style={{flex: 1}}>
-                {renderBookInfoSection()}
+                {renderHeader()}
             </View>
             {/* Description */}
             <View style={{flex: 10}}>
-                {renderBookDescription()}
+                {renderBody()}
             </View>
             {/* Buttons */}
-            <View style={{height: 70, marginBottom: 0}}>
-                {renderBottomButton()}
+            <View style={{height: 60, marginBottom: 0}}>
+                {renderFooter()}
             </View>
         </View>
     )
@@ -175,10 +252,10 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.black
     },
     pdf: {
-            flex:1,
-            width:Dimensions.get('window').width,
-            height:Dimensions.get('window').height,
-        }
+        flex:1,
+        width:Dimensions.get('window').width,
+        height:Dimensions.get('window').height,
+    }
 })
 
 export default Signature;
