@@ -1,35 +1,35 @@
-import React from 'react';
+import React, { useState, useEffect  } from 'react';
 import {
     View,
     Text,
     StyleSheet,
-    ImageBackground,
     TouchableOpacity,
     Image,
-    ScrollView,
-    Animated,
-    Dimensions
+    Dimensions,
+    Picker,
+    ActivityIndicator,
+    Alert 
 } from 'react-native';
 import { COLORS, FONTS, icons, SIZES } from '../../constants';
 import { POST_DATA } from '../ultils/api';
 import Pdf from 'react-native-pdf';
-const LineDivider = () => {
-    return (
-        <View style={{width: 1, paddingVertical: 5}}>
-            <View style={{flex: 1, borderColor: COLORS.lightGray2, borderLeftWidth: 1}}></View>
-        </View>
-    )
+const width_screen  = Dimensions.get('window').width;
+const height_screen  = Dimensions.get('window').height;
 
-}
 
 const Signature = ({ route, navigation }) => {
 
-    const [file, setFile] = React.useState();
-    const [signature, setSignature] = React.useState('');
-    const [localSignature, setLocalSignature] = React.useState([]);
-    const [pageCurrent, setPageCurrent] = React.useState(0);
-    const [totalPage, setTotalPage] = React.useState(0);
-    React.useEffect(() => {
+    const [file, setFile] = useState();
+    const [visibleType, setVisibleType] = useState(3);
+    const [signature, setSignature] = useState('');
+    const [localSignature, setLocalSignature] = useState([]);
+    const [pageCurrent, setPageCurrent] = useState(0);
+    const [totalPage, setTotalPage] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
+    const [accessTokenVnpt, setAccessTokenVnpt] = useState('');
+    const [tranId, setTranId] = useState('');
+    const [note, setNote] = useState('');
+    useEffect(() => {
         const id_rpa = route.params.rpa;
         const id_task = route.params.task;
         const id_file = route.params.file_id;
@@ -42,6 +42,7 @@ const Signature = ({ route, navigation }) => {
         let url = `/signature-sign.php`;
         POST_DATA(`${url}`, payload).then(res => {
             if(res['success'] == 1){
+                console.log(res)
                 setLocalSignature(res['data']);
                 setSignature(res['signature'])
                 setFile(res['file'])
@@ -54,7 +55,7 @@ const Signature = ({ route, navigation }) => {
 
     function renderHeader() {
         return (
-            <View style={{flex: 1, backgroundColor: COLORS.white, borderBottomColor: COLORS.darkgrayText, borderBottomWidth: 1}}>
+            <View style={{flex: 1, backgroundColor: COLORS.white, borderBottomColor: COLORS.darkgray, borderBottomWidth: 1}}>
             
                 {/* Color Overlay */}
                 <View
@@ -114,21 +115,7 @@ const Signature = ({ route, navigation }) => {
             </View>
         )
     }
-    function renderSignature(val){
-        console.log(val)
-        return (
-            <View style={{ position: 'absolute', top: 10, zIndex: 999999999999}}>
-                <Image 
-                    source={{uri: signature}}
-                    style={{
-                        width: 160,
-                        height: 70
-                    }}
-                />
-            </View>
-        )
-        
-    }
+
     function renderBody() {
         if(file){
             const source = { uri: file.PATH, cache: true };
@@ -154,12 +141,14 @@ const Signature = ({ route, navigation }) => {
                                     console.log(`Link pressed: ${uri}`);
                                 }}
                                 style={styles.pdf}/>
-                                {
+                                {signature !== '' && (
                                     Object.entries(localSignature).map(([key, value]) => {
                                         if(Number(key) == pageCurrent){
                                             return Object.entries(value).map(([key_, value_]) => {
+                                                let x = value_['x']*width_screen/100;
+                                                let y = value_['y']*(height_screen-150)/100;
                                                 return (
-                                                    <View style={{position:'absolute', top: 10, left: 20}}>
+                                                    <View key={Number(key_).toString()} style={{position:'absolute', top: y, left: x, borderColor: 'red', borderWidth: 1, borderStyle: 'dashed',}}>
                                                         <Image 
                                                             source={{uri: signature}}
                                                             style={{
@@ -173,57 +162,196 @@ const Signature = ({ route, navigation }) => {
                                         }
                                         
                                     })
-                                //      Object.entries(localSignature).map(([key, value]) => {
-                                //         if(key == pageCurrent){
-                                //         Object.entries(value).map(([key_, value_]) => {
-                                //             renderSignature()
-                                //         });
-                                //     }
-                                // });
+                                )
+                                    
                                 }
                                
                                 
                         </View>
-                        
+                        {totalPage > 1 && (
+                            <View style={{flexDirection: 'row',backgroundColor: COLORS.white,paddingHorizontal: 15, borderRadius: 4, paddingVertical: 5, position: 'absolute', bottom: 5, left: '40%', justifyContent: 'center', alignItems: 'center'}}>
+                                <Text style={{fontWeight: 'bold'}}>{pageCurrent ? pageCurrent : 1}</Text>
+                                <Text style={{marginHorizontal: SIZES.base}}>|</Text>
+                                <Text style={{fontWeight: 'bold'}}>{totalPage}</Text>
+                            </View>
+                        )}
+                        {note !== '' && (
+                            <View style={{width: '100%',flexDirection: 'row',backgroundColor: COLORS.primary,paddingHorizontal: 15, paddingVertical: 5, position: 'absolute', top: 10}}>
+                                <Text style={{color: COLORS.white}}>{note}</Text>
+                            </View>
+                        )}
                     </View>
                 </View>
             )
         }      
        
     }
+    const actionSign = () => {
+        setIsLoading(false);
+        const id_rpa = route.params.rpa;
+        const id_task = route.params.task;
+        const id_file = route.params.file_id;
+        let payload = {
+            'rpa' : id_rpa,
+            'task' : id_task,
+            'file_id': id_file,
+            'visibleType' : visibleType
+        };
+        let url = `/signature-sign.php`;
+        POST_DATA(`${url}`, payload).then(res => {
+            if(res['success'] == 1){
+                console.log(res)
+                if(res.access_token_vnpt)
+                    setAccessTokenVnpt(res.access_token_vnpt);
+                if(res.tranId)
+                    setTranId(res.tranId)
 
+                setNote(res.note);
+            }
+            setIsLoading(true);
+         }).catch((error)=>{
+            console.log("Api call error");
+            alert(error.message);
+         });
+        
+    }
+    const actionComplete = () => {
+        setIsLoading(false);
+        const id_rpa = route.params.rpa;
+        const id_task = route.params.task;
+        const id_file = route.params.file_id;
+        let payload = {
+            'rpa' : id_rpa,
+            'task' : id_task,
+            'file_id': id_file,
+            'tran_id' : tranId,
+            'access_token_vnpt' : accessTokenVnpt,
+        };
+        let url = `/signature-sign.php`;
+        POST_DATA(`${url}`, payload).then(res => {
+            if(res['success'] == 1){
+                setLocalSignature([]);
+                setSignature('')
+                setFile(res['file'])
+                navigation.goBack();
+            }
+            setIsLoading(true);
+         }).catch((error)=>{
+            console.log("Api call error");
+            alert(error.message);
+         });
+    }
+    const createSigAlert = () => {
+        Alert.alert(
+            "Thông báo",
+            "Bạn muốn thực hiện thao tác này",
+            [
+              {
+                text: "Hủy",
+                onPress: () => console.log("Cancel Pressed"),
+                style: "cancel"
+              },
+              { text: "Đồng ý", onPress: () => actionSign()}
+            ]
+          );
+    }
     function renderFooter () {
         return (
-            <View style={{flex: 1, flexDirection: 'row', backgroundColor: COLORS.white, borderTopColor: COLORS.border, borderTopWidth: 1}}>
-
-                {/* Start Reading */}
-                <TouchableOpacity
-                    style={{
-                        flex: 1,
-                        backgroundColor: COLORS.oragin,
-                        marginHorizontal: SIZES.largeTitle,
-                        marginVertical: SIZES.base,
-                        borderRadius: SIZES.base,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                    onPress = {() => console.log("Start Reading")}
-                >
-                    <View style={{flexDirection: 'row'}}>
-                        <Image
-                            source={icons.signature}
-                            resizeMode="contain"
+            <View style={{flex: 1, flexDirection: 'row', backgroundColor: COLORS.white, borderTopColor: COLORS.darkgray, borderTopWidth: 1}}>
+                {tranId == '' ? (
+                    <>
+                            
+                    {isLoading == true ? (
+                        <TouchableOpacity
                             style={{
-                                width: 20,
-                                height: 20,
-                                tintColor: COLORS.white
+                                flex: 1,
+                                backgroundColor: COLORS.oragin,
+                                marginHorizontal: SIZES.largeTitle,
+                                marginVertical: SIZES.base,
+                                borderRadius: SIZES.base,
+                                alignItems: 'center',
+                                justifyContent: 'center',
                             }}
-                        />
-                        <Text style={{color: COLORS.white, ...FONTS.body4, marginLeft: SIZES.base}}>Xác nhận ký</Text>
+                            onPress = {() => createSigAlert()}
+                        >
+                            <View style={{flexDirection: 'row'}}>
+                                <Image
+                                    source={icons.signature}
+                                    resizeMode="contain"
+                                    style={{
+                                        width: 20,
+                                        height: 20,
+                                        tintColor: COLORS.white
+                                    }}
+                                />
+                                <Text style={{color: COLORS.white, ...FONTS.body4, marginLeft: SIZES.base}}>Xác nhận ký</Text>
 
+                            </View>
+                        </TouchableOpacity>
+                    ) : (
+                        <View style={{
+                            flex: 1,
+                            backgroundColor: COLORS.oragin,
+                            marginHorizontal: SIZES.largeTitle,
+                            marginVertical: SIZES.base,
+                            borderRadius: SIZES.base,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}>
+                            <ActivityIndicator animating={true} color="#FFF" />
+                        </View>
+                    )}
+                    </>
+                ):(
+                    <View style={{width: '100%'}}>
+                    {isLoading == true ? (
+                        <TouchableOpacity
+                            style={{
+                                flex: 1,
+                                backgroundColor: COLORS.primary,
+                                marginHorizontal: SIZES.largeTitle,
+                                marginVertical: SIZES.base,
+                                borderRadius: SIZES.base,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                paddingHorizontal: SIZES.padding
+                            }}
+                            onPress = {() => actionComplete()}
+                            >
+                            <View style={{flexDirection: 'row'}}>
+                                <Image
+                                    source={icons.success}
+                                    resizeMode="contain"
+                                    style={{
+                                        width: 20,
+                                        height: 20,
+                                        tintColor: COLORS.white
+                                    }}
+                                />
+                                <Text style={{color: COLORS.white, ...FONTS.body4, marginLeft: SIZES.base}}>Hoàn thành ký</Text>
+
+                            </View>
+                        </TouchableOpacity>
+                    ) : (
+                        <View style={{
+                            flex: 1,
+                            backgroundColor: COLORS.primary,
+                            marginHorizontal: SIZES.base,
+                            marginVertical: SIZES.base,
+                            borderRadius: SIZES.base,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}>
+                            <ActivityIndicator animating={true} color="#FFF" />
+                        </View>
+                    )}
                     </View>
-                </TouchableOpacity>
+                    )
+                }
+                
+                              
             </View>
+            
         )
     }
 
@@ -253,8 +381,8 @@ const styles = StyleSheet.create({
     },
     pdf: {
         flex:1,
-        width:Dimensions.get('window').width,
-        height:Dimensions.get('window').height,
+        width:width_screen,
+        height:height_screen,
     }
 })
 

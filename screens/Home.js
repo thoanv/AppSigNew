@@ -53,7 +53,7 @@ const Home = ({navigation}) => {
             >
                 <View style={{flex: 1}}>
                     <Text style={{...FONTS.h2}}>Hello!</Text>
-                    <Text style={{...FONTS.body3, color: COLORS.darkgray}}>{userLogin}</Text>
+                    <Text style={{...FONTS.body3, color: COLORS.darkgrayText}}>{userLogin}</Text>
                 </View>
                 <View style={{
                     alignItems: 'center',
@@ -160,28 +160,28 @@ const Home = ({navigation}) => {
                                  height: 40,
                              }}
                          />
-                        <Text style={{...FONTS.h5, marginTop: SIZES.base}}>{value.NAME_TASK}</Text>
+                        <Text style={{...FONTS.h6, marginTop: SIZES.base, fontWeight: 'bold'}}>{value.NAME_TASK}</Text>
                         <View style={{marginTop: SIZES.base}}>
                             <View style={{flexDirection: 'row', }}>
                             <Image
                                  source={icons.black_user}
                                  resizeMode="cover"
                                  style= {{
-                                     width: 18,
-                                     height: 18,
+                                     width: 16,
+                                     height: 16,
                                      marginRight: SIZES.base,
                                      tintColor: COLORS.darkgray
                                  }}
                              />
-                             <Text style={{...FONTS.body4, color: COLORS.darkgray}}>{value.CREATED_BY.LAST_NAME} {value.CREATED_BY.NAME}</Text>
+                             <Text style={{...FONTS.body5, color: COLORS.darkgray}}>{value.CREATED_BY.LAST_NAME} {value.CREATED_BY.NAME}</Text>
                             </View>
                             <View style={{flexDirection: 'row', marginTop: 2}}>
                                 <Image
                                      source={icons.clock}
                                      resizeMode="cover"
                                      style= {{
-                                         width: 18,
-                                         height: 18,
+                                         width: 16,
+                                         height: 16,
                                          marginRight: SIZES.base,
                                          tintColor: COLORS.darkgray
                                      }}

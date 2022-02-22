@@ -15,13 +15,12 @@ import {
 import { COLORS, FONTS, icons, SIZES } from '../../constants';
 import BorderHorizontal from '../../components/borderHorizontal';
 import Dot from '../../components/dot';
-import { GET_DATA, POST_DATA } from '../ultils/api';
+import { POST_DATA } from '../ultils/api';
 import Modal from "react-native-modal";
 const width_screen  = Dimensions.get('window').width;
-const height_screen  = Dimensions.get('window').height;
+
 const Detail = ({ route, navigation }) => {
     const [data, setData] = useState([]);
-    const [isModalVisible, setModalVisible] = useState(false);
     React.useEffect(() => {
         let id_rpa = route.params.ID_RPA;
         let id_task = route.params.ID_TASK;
@@ -33,7 +32,6 @@ const Detail = ({ route, navigation }) => {
         POST_DATA(`${url}`, payload).then(res => {
             if(res['success'] == 1){
                 setData(res['data'])
-                // console.log(data)
             }
          }).catch((error)=>{
             console.log("Api call error");
@@ -43,25 +41,14 @@ const Detail = ({ route, navigation }) => {
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
+   
+    const [isModalVisible, setModalVisible] = useState(false);
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
-        if(!isModalVisible){
-            Animated.timing(fadeAnim, {
-                toValue: 1,
-                duration: 500,
-                useNativeDriver: false,
-                }).start();
-        }else{
-            Animated.timing(fadeAnim, {
-                toValue: 0,
-                duration: 1000,
-                useNativeDriver: false,
-                }).start();
-        }
     };
     function renderHeader() {
         return (
-            <View style={{flex: 1, backgroundColor: COLORS.white, borderBottomColor: COLORS.border, borderBottomWidth: 1}}>
+            <View style={{flex: 1, backgroundColor: COLORS.white, borderBottomColor: COLORS.darkgray, borderBottomWidth: 1}}>
             
                 {/* Color Overlay */}
                 <View
@@ -197,7 +184,9 @@ const Detail = ({ route, navigation }) => {
     }
     function renderInfoTask() {
         let created_at = data.CREATED_BY;
+        
         if(created_at) {
+            let nameUser = `${created_at['LAST_NAME']} ${created_at['NAME']}`
             return (
                 <View style={{flexDirection: 'row', marginBottom: SIZES.base}}>
                     {/* Custom Scrollbar */}
@@ -211,7 +200,7 @@ const Detail = ({ route, navigation }) => {
                         >
                             <Text style={{...FONTS.body3, fontWeight: 'bold', textTransform: 'uppercase'}}>Thông tin task</Text>
                             <BorderHorizontal/>
-                            {itemTaskUser(icons.user, 'Người tạo', created_at.LAST_NAME ? created_at.LAST_NAME : ''+' '+created_at.NAME ? created_at.NAME : '',  created_at.LOGIN, created_at.WORK_POSITION  )}
+                            {itemTaskUser(icons.user, 'Người tạo', nameUser,  created_at.LOGIN, created_at.WORK_POSITION  )}
                             {itemTask(icons.more, 'Phòng ban', created_at.WORK_DEPARTMENT)}
                             {itemTask(icons.clock, 'Thời gian tạo', data.CREATED_AT)}
                             {itemTask(icons.process, 'Quy trình', data.NAME_RPA)}
@@ -412,7 +401,7 @@ const Detail = ({ route, navigation }) => {
                 </View>
                 <View>
                     <View style={{flexDirection: 'row'}}>
-                        <Text style={{...FONTS.body4}}>NGuyễn Văn Thỏa </Text>
+                        <Text style={{...FONTS.body4}}>{value} </Text>
                         <Dot />
                         <Text>@{login}</Text>
                     </View>
@@ -450,7 +439,7 @@ const Detail = ({ route, navigation }) => {
     }
     function renderBottomButton () {
         return (
-            <View style={{flex: 1, flexDirection: 'row', backgroundColor: COLORS.white, borderTopColor: COLORS.border, borderTopWidth: 1}}>
+            <View style={{flex: 1, flexDirection: 'row', backgroundColor: COLORS.white, borderTopColor: COLORS.darkgray, borderTopWidth: 1}}>
               
                 {/* Start Reading */}
                 <TouchableOpacity
@@ -465,7 +454,7 @@ const Detail = ({ route, navigation }) => {
                     }}
                     onPress={toggleModal}
                 >
-                {!isModalVisible && (
+                
                     <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                         <Image
                             source={icons.up_down}
@@ -479,22 +468,7 @@ const Detail = ({ route, navigation }) => {
 
                         <Text style={{color: COLORS.white, ...FONTS.body4, marginLeft: SIZES.base}}>Xác nhận</Text>
                     </View>
-                ) }
-                {isModalVisible && (
-                    <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                        <Image
-                            source={icons.close}
-                            resizeMode="cover"
-                            style= {{
-                                width: 15,
-                                height: 15,
-                                tintColor: COLORS.white
-                            }}
-                        />
-
-                        <Text style={{color: COLORS.white, ...FONTS.body4, marginLeft: SIZES.base}}>Đóng</Text>
-                    </View>
-                ) }
+           
                 </TouchableOpacity>
             </View>
         )
@@ -517,40 +491,40 @@ const Detail = ({ route, navigation }) => {
             <View style={{height: 60, marginBottom: 0}}>
                 {renderBottomButton()}
             </View>
-            <Animated.View
-                style={[
-                styles.fadingContainer,
-                {
-                    // Bind opacity to animated value
-                    opacity: fadeAnim,
-                    bottom: 60,
-                }
-                ]}
-            >
-                <View>
-                    <View style={styles.stage}>
-                        <TouchableOpacity style={styles.itemStage}>
-                            <Text style={{color: 'green', ...FONTS.body4}}>Trưởng ban công nghệ</Text>
-                        </TouchableOpacity>
+           
+            <View>
+
+                <Modal isVisible={isModalVisible}>
+                    <View style={{backgroundColor: COLORS.white, borderRadius: SIZES.padding}}>
+                        <View style={styles.stage}>
+                            <TouchableOpacity style={styles.itemStage}>
+                                <Text style={{color: 'green', ...FONTS.body4}}>Trưởng ban công nghệ</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.stage}>
+                            <TouchableOpacity style={styles.itemStage}>
+                                <Text style={{color: 'green', ...FONTS.body4}}>Trưởng bộ phận</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.stage}>
+                            <TouchableOpacity style={styles.itemStage}>
+                                <Text style={{color: 'green', ...FONTS.body4}}>Xác nhận công</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.stage}>
+                            <TouchableOpacity style={styles.itemStage}>
+                                <Text style={{color: 'green', ...FONTS.h6}}>Trưởng phòng HCNS</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.stageEnd}>
+                        
+                            <TouchableOpacity style={styles.itemStage}  onPress={toggleModal}>
+                                <Text style={{color: 'red', ...FONTS.body4}}>Đóng</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                    <View style={styles.stage}>
-                       <TouchableOpacity style={styles.itemStage}>
-                           <Text style={{color: 'green', ...FONTS.body4}}>Trưởng bộ phận</Text>
-                       </TouchableOpacity>
-                    </View>
-                    <View style={styles.stage}>
-                       <TouchableOpacity style={styles.itemStage}>
-                           <Text style={{color: 'green', ...FONTS.body4}}>Xác nhận công</Text>
-                       </TouchableOpacity>
-                    </View>
-                    <View style={styles.stage}>
-                       <TouchableOpacity style={styles.itemStage}>
-                           <Text style={{color: 'green', ...FONTS.body4}}>Trưởng phòng HCNS</Text>
-                       </TouchableOpacity>
-                    </View>
-                </View>
-            </Animated.View>
-            
+                </Modal>
+            </View>
         </SafeAreaView>
     )
 
@@ -610,6 +584,11 @@ const styles = StyleSheet.create({
         borderBottomColor: COLORS.border,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    stageEnd:{
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row',
     },
     itemStage:{
         paddingVertical: 10
