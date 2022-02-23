@@ -1,36 +1,41 @@
-import React from 'react';
+import React, { useState, useEffect  } from 'react';
 import {
     View,
     Text,
     StyleSheet,
-    ImageBackground,
     TouchableOpacity,
     Image,
-    ScrollView,
-    Animated,
-    Dimensions,
-    FlatList
+    FlatList,
+    ActivityIndicator
 } from 'react-native';
 import { COLORS, FONTS, icons, SIZES } from '../../constants';
-import Pdf from 'react-native-pdf';
-const LineDivider = () => {
-    return (
-        <View style={{width: 1, paddingVertical: 5}}>
-            <View style={{flex: 1, borderColor: COLORS.lightGray2, borderLeftWidth: 1}}></View>
-        </View>
-    )
-}
-
+import { POST_DATA } from '../ultils/api';
 const List = ({ route, navigation }) => {
-    const data = [
-        {id:1, image: "https://bootdey.com/img/Content/avatar/avatar1.png", name:"Đề xuất tạm ứng 30% lương cho nhân viên Nguyễn Văn Thỏa chuyên viên phần mềm",    comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor."},
-        {id:2, image: "https://bootdey.com/img/Content/avatar/avatar6.png", name:"Đề xuất tạm ứng 30% lương cho nhân viên",     comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor."},
-        {id:3, image: "https://bootdey.com/img/Content/avatar/avatar7.png", name:"Đề xuất tạm ứng 30% lương", comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor."},
-        {id:4, image: "https://bootdey.com/img/Content/avatar/avatar2.png", name:"Đề xuất tạm ứng 30% lương cho nhân viên Nguyễn Văn Thỏa chuyên viên phần mềm",  comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor."},
-        {id:5, image: "https://bootdey.com/img/Content/avatar/avatar3.png", name:"Nguyễn Văn Thỏa",  comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor."},
-        {id:6, image: "https://bootdey.com/img/Content/avatar/avatar4.png", name:"chuyên viên phần mềm", comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor."},
-        {id:7, image: "https://bootdey.com/img/Content/avatar/avatar5.png", name:"Đề xuất tạm ứng 30% lương cho nhân viên Nguyễn Văn Thỏa chuyên viên phần mềm",      comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor."},
-      ]
+    const [data, setData] = useState([]);
+    const [title, setTitle] = useState('');
+    const [limit, setLimit] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
+    const [empty, setEmpty] = useState(false);
+    useEffect(() => {
+        const id_rpa = route.params.ID_RPA;
+        const name_rpa = route.params.NAME_RPA;
+        setTitle(name_rpa);
+        let payload = {
+            'rpa' : id_rpa,
+            'limit': limit,
+        };
+        let url = `/signature-list-task.php`;
+        POST_DATA(`${url}`, payload).then(res => {
+            if(res['success'] == 1){
+                setData(res['data']);
+                setLimit(limit+5);
+            }
+         }).catch((error)=>{
+            console.log("Api call error");
+            alert(error.message);
+         });
+    }, [])
+   
     function renderHeader() {
         return (
             <View style={{flex: 1, backgroundColor: COLORS.white, borderBottomColor: COLORS.darkgrayText, borderBottomWidth: 1}}>
@@ -70,7 +75,7 @@ const List = ({ route, navigation }) => {
                     </TouchableOpacity>
 
                     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                            <Text style={{...FONTS.h3,}}>[BCN] Xác nhận công</Text>
+                            <Text style={{...FONTS.h3,}}>{title}</Text>
                     </View>
 
                     <TouchableOpacity
@@ -93,7 +98,57 @@ const List = ({ route, navigation }) => {
             </View>
         )
     }
-
+    const _onEndReachedLoad = () => {
+        console.log(limit)
+        if(!empty){
+            setIsLoading(true)
+            const id_rpa = route.params.ID_RPA;
+            let payload = {
+                'rpa' : id_rpa,
+                'limit': limit,
+            };
+            let url = `/signature-list-task.php`;
+            POST_DATA(`${url}`, payload).then(res => {
+                if(res['success'] == 1){
+                    if(res['data'].length){
+                        const result =  data.concat(res['data']);
+                        console.log(res['data'])
+                        setData(result);
+                        setLimit(limit+5);
+                    }
+                    else{
+                        setEmpty(true)
+                    }
+                }
+                setIsLoading(false)
+            }).catch((error)=>{
+                console.log("Api call error");
+                alert(error.message);
+            });
+        }
+    }
+    const _handleOnRefresh = () => {
+        const limit_ = 0;
+        setData([]);
+        setEmpty(false);
+        setIsLoading(false);
+        const id_rpa = route.params.ID_RPA;
+        let payload = {
+            'rpa' : id_rpa,
+            'limit': limit_,
+        };
+        let url = `/signature-list-task.php`;
+        POST_DATA(`${url}`, payload).then(res => {
+            setLimit(limit_);
+            if(res['success'] == 1){
+                setData(res['data']);
+                setLimit(5);
+            }
+         }).catch((error)=>{
+            console.log("Api call error");
+            alert(error.message);
+         });
+    }
     function renderBody() {
         return (
             <FlatList
@@ -104,16 +159,26 @@ const List = ({ route, navigation }) => {
                   )
                 }}
                 keyExtractor={(item)=>{
-                  return item.id;
+                  return 'a'+item.ID;
                 }}
-                renderItem={(item) => {
-                    const Notification = item.item;
+                refreshing={false}
+                onRefresh={() => _handleOnRefresh()}
+                onEndReachedThreshold={0.1}
+                onEndReached={() => 
+                    _onEndReachedLoad()
+                }
+                ListFooterComponent={() => (empty == true ? 
+                    <View style={{justifyContent:'center', alignItems: 'center'}}><Text style={styles.emptyMessageStyle}>Dữ liệu trống</Text></View> 
+                    : null)}
+                renderItem={({item}) => {
+                    let createBy = item.CREATED_BY;
+                    const bg = item.FILE_SIGNED == item.COUNT_FILE ? '#FFF' : '#d2e4f5';
                     return(
-                        <View style={{paddingVertical: SIZES.base, paddingHorizontal: SIZES.base}}>
+                        <View style={{paddingVertical: SIZES.base, paddingHorizontal: SIZES.base, backgroundColor: bg}}>
                             <TouchableOpacity
                                 onPress={()=> navigation.navigate("Detail",{
-                                    ID_RPA: 43,
-                                    ID_TASK: 69
+                                    ID_RPA: route.params.ID_RPA,
+                                    ID_TASK: item.ID
                                 })
                             }>
                             <View style={{flexDirection: 'row', }} >
@@ -124,75 +189,162 @@ const List = ({ route, navigation }) => {
                                 />
                                 <View style={styles.content}>
                                     <View style={styles.contentHeader}>
-                                        <Text  style={styles.name}>{Notification.name}</Text>
+                                        <Text  style={styles.name}>{item.NAME}1</Text>
                                     </View>
                                     <View style={{marginTop: SIZES.base}}>
                                         <View style={{flexDirection: 'row'}}>
-                                            <View style={{flexDirection: 'row', marginRight: SIZES.base*2}}>
-                                                <Image
-                                                     source={icons.black_user}
-                                                     resizeMode="cover"
-                                                     style= {{
-                                                         width: 18,
-                                                         height: 18,
-                                                         marginRight: SIZES.base,
-                                                         tintColor: COLORS.darkgrayText
-                                                     }}
-                                                />
-                                                <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>NGuyễn Văn Thỏa</Text>
-                                            </View>
-                                            <View style={{flexDirection: 'row'}}>
-                                                <Image
-                                                     source={icons.more}
-                                                     resizeMode="cover"
-                                                     style= {{
-                                                         width: 18,
-                                                         height: 18,
-                                                         marginRight: SIZES.base,
-                                                         tintColor: COLORS.darkgrayText
-                                                     }}
-                                                />
-                                                <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>Ban Công nghệ</Text>
-                                            </View>
+                                            {createBy && (
+                                                <>
+                                                <View style={{flexDirection: 'row', marginRight: SIZES.base*2,  alignItems: 'center',}}>
+                                                    <Image
+                                                        source={icons.black_user}
+                                                        resizeMode="cover"
+                                                        style= {{
+                                                            width: 16,
+                                                            height: 16,
+                                                            marginRight: SIZES.base,
+                                                            tintColor: COLORS.darkgrayText
+                                                        }}
+                                                    />
+                                                    <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>{createBy.FULLNAME}</Text>
+                                                </View>
+                                           
+                                                <View style={{flexDirection: 'row', alignItems: 'center',}}>
+                                                    <Image
+                                                        source={icons.more}
+                                                        resizeMode="cover"
+                                                        style= {{
+                                                            width: 16,
+                                                            height: 16,
+                                                            marginRight: SIZES.base,
+                                                            tintColor: COLORS.darkgrayText
+                                                        }}
+                                                    />
+                                                    <Text style={{...FONTS.body4, color: COLORS.darkgrayText, textTransform: 'capitalize'}}>{createBy.WORK_DEPARTMENT}</Text>
+                                                </View>
+                                                </>
+                                            )}
                                         </View>
-                                        <View style={{flexDirection: 'row', marginTop: 5}}>
-                                            <View style={{flexDirection: 'row', marginRight: SIZES.base*2}}>
+                                        <View style={{flexDirection: 'row', marginTop: 3}}>
+                                            <View style={{flexDirection: 'row', marginRight: SIZES.base*2 , alignItems: 'center',}}>
                                                 <Image
                                                      source={icons.clock}
                                                      resizeMode="cover"
                                                      style= {{
-                                                         width: 18,
-                                                         height: 18,
+                                                         width: 16,
+                                                         height: 16,
                                                          marginRight: SIZES.base,
                                                          tintColor: COLORS.darkgrayText
                                                      }}
                                                 />
-                                                <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>09:09 22/05/2022</Text>
+                                                <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>{item.CREATED_TIME}</Text>
                                             </View>
-                                            <View style={{flexDirection: 'row'}}>
-                                                <Image
-                                                     source={icons.file}
-                                                     resizeMode="cover"
-                                                     style= {{
-                                                         width: 18,
-                                                         height: 18,
-                                                         marginRight: SIZES.base,
-                                                         tintColor: COLORS.darkgrayText
-                                                     }}
-                                                />
-                                                <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>1/2</Text>
-                                            </View>
+                                            {item.checkCreatedByAndUserSig == true && (
+                                                <View style={{flexDirection: 'row' , alignItems: 'center',}}>
+                                                    <Image
+                                                        source={icons.file}
+                                                        resizeMode="cover"
+                                                        style= {{
+                                                            width: 16,
+                                                            height: 16,
+                                                            marginRight: SIZES.base,
+                                                            tintColor: COLORS.darkgrayText,
+                                                        }}
+                                                    />
+                                                    <Text style={{...FONTS.body4, color: COLORS.darkgrayText, fontWeight: 'bold'}}>{item.FILE_SIGNED}/{item.COUNT_FILE}</Text>
+                                                </View>
+                                            )}
+                                            
                                         </View>
+                                        {item.STAGE && (
+                                            <View style={{flexDirection: 'row', marginTop: 3}}>
+                                                <View style={{flexDirection: 'row', marginRight: SIZES.base*2, alignItems: 'center',}}>
+                                                    <Image
+                                                        source={icons.proccess}
+                                                        resizeMode="cover"
+                                                        style= {{
+                                                            width: 16,
+                                                            height: 16,
+                                                            marginRight: SIZES.base,
+                                                            tintColor: COLORS.darkgrayText,
+                                                        }}
+                                                    />
+                                                    <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>{item.STAGE.NAME}</Text>
+                                                </View>
+                                                
+                                                
+                                            </View>
+                                        )}
+                                        
 
+                                    </View>
+                                    <View style={{marginTop: SIZES.base}}>
+                                        <View style={{flexDirection: 'row'}}>
+                                        <FlatList
+                                            horizontal
+                                            showsHorizontalScrollIndicator={false}
+                                            renderItem={(itemUser) => {
+                                                const ite = itemUser.item
+                                                if(ite.INFORMATION){
+                                                    const user = ite.INFORMATION;
+                                                    return (
+                                                        <View style={{marginRight: SIZES.base*2}}>
+                                                            {user.PATH ? (
+                                                                <Image 
+                                                                    source={{uri: user.PATH}}
+                                                                    style={{
+                                                                        width: 35,
+                                                                        height: 35,
+                                                                        borderRadius: 15,
+                                                                        borderWidth: 1,
+                                                                        borderColor: COLORS.darkgray
+                                                                    }}
+                                                                />
+                                                            ):(
+                                                                <Image 
+                                                                    source={icons.user}
+                                                                    style={{
+                                                                        width: 35,
+                                                                        height: 35,
+                                                                        borderRadius: 15,
+                                                                        borderWidth: 1,
+                                                                        borderColor: COLORS.darkgray
+                                                                    }}
+                                                                />
+                                                            )}
+                                                            {ite.FILE_SIGNATURE == item.COUNT_FILE && (
+                                                                <Image 
+                                                                    source={icons.check_green}
+                                                                    style={{
+                                                                        width: 15,
+                                                                        height: 15,
+                                                                        position:'absolute',
+                                                                        right: -5,
+                                                                        top: 0
+                                                                    }}
+                                                                />
+                                                            )}
+                                                            
+                                                        </View>
+                                                    )
+                                                }
+                                                
+                                            }}
+                                            data={item.USERS}
+                                            keyExtractor={(itemUser, index) => `u${item.ID} ${index}`}
+                                        />
+                                        
+                                        </View>
                                     </View>
                                 </View>
                                 </View>
                             </TouchableOpacity>
-
+                            
                         </View>
                     );
                 }
             }/>
+           
         );
     }
 
@@ -206,6 +358,12 @@ const List = ({ route, navigation }) => {
             {/* Description */}
             <View style={{flex: 10}}>
                 {renderBody()}
+                {isLoading == true && (
+                    <View>
+                        <ActivityIndicator animating={isLoading} color='#000' />
+                    </View>
+                )}
+               
             </View>
         </View>
     )

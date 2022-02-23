@@ -160,7 +160,7 @@ const Home = ({navigation}) => {
                                  height: 40,
                              }}
                          />
-                        <Text style={{...FONTS.h6, marginTop: SIZES.base, fontWeight: 'bold'}}>{value.NAME_TASK}</Text>
+                        <Text numberOfLines={2} style={{...FONTS.h6, marginTop: SIZES.base, fontWeight: 'bold', height: 40}}>{value.NAME_TASK}</Text>
                         <View style={{marginTop: SIZES.base}}>
                             <View style={{flexDirection: 'row', }}>
                             <Image
@@ -204,7 +204,8 @@ const Home = ({navigation}) => {
 
                         <TouchableOpacity
                             onPress={()=> navigation.navigate("List", {
-                                ID_RPA: 43
+                                ID_RPA: item.ID,
+                                NAME_RPA: item.TITLE,
                             })}
                         >
                             <Text style={{color: COLORS.primary, ...FONTS.body4, alignSelf: 'flex-start', marginRight: SIZES.base}}>Xem thêm ></Text>
@@ -239,9 +240,15 @@ const Home = ({navigation}) => {
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: COLORS.white}}>
             <View style={styles.container}>
-                 {renderHeader()}
-                 {renderButtonSection()}
-                 {renderDataSection()}
+                <View style={{flex: 3}}>
+                    {renderHeader()}
+                    {renderButtonSection()}
+                </View>
+                <View style={{flex: 10}}>
+                    <ScrollView>
+                        {renderDataSection()}
+                    </ScrollView>
+                </View>
             </View>
 
         </SafeAreaView>

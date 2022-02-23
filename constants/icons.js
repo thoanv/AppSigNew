@@ -32,7 +32,7 @@ const right_arrow = require("../assets/icons/right-arrow.png");
 const up_down = require("../assets/icons/up_down.png");
 const file = require("../assets/icons/file.png");
 const success = require("../assets/icons/success.png");
-
+const location = require("../assets/icons/location.png");
 
 export default {
     back,
@@ -68,5 +68,6 @@ export default {
     right_arrow,
     up_down,
     file,
-    success
+    success,
+    location
 }

@@ -10,7 +10,8 @@ import {
     SafeAreaView,
     FlatList,
     Animated,
-    Button
+    ActivityIndicator,
+    Alert 
 } from 'react-native';
 import { COLORS, FONTS, icons, SIZES } from '../../constants';
 import BorderHorizontal from '../../components/borderHorizontal';
@@ -21,6 +22,8 @@ const width_screen  = Dimensions.get('window').width;
 
 const Detail = ({ route, navigation }) => {
     const [data, setData] = useState([]);
+    const [stages, setStages] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     React.useEffect(() => {
         let id_rpa = route.params.ID_RPA;
         let id_task = route.params.ID_TASK;
@@ -32,6 +35,7 @@ const Detail = ({ route, navigation }) => {
         POST_DATA(`${url}`, payload).then(res => {
             if(res['success'] == 1){
                 setData(res['data'])
+                setStages(res['stages'])
             }
          }).catch((error)=>{
             console.log("Api call error");
@@ -39,13 +43,51 @@ const Detail = ({ route, navigation }) => {
          });
     }, [])
 
-    const fadeAnim = useRef(new Animated.Value(0)).current;
-
-   
     const [isModalVisible, setModalVisible] = useState(false);
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
     };
+    const createAlert = (stage_id) => {
+        Alert.alert(
+            "Thông báo",
+            "Bạn muốn thực hiện thao tác này",
+            [
+              {
+                text: "Hủy",
+                onPress: () => console.log("Cancel Pressed"),
+                style: "cancel"
+              },
+              { text: "Đồng ý", onPress: () => actionChangeStage(stage_id)}
+            ]
+          );
+    }
+    const actionChangeStage = (stage_id) => {
+        console.log(stage_id);
+        setModalVisible(!isModalVisible);
+        setIsLoading(false)
+        let id_rpa = route.params.ID_RPA;
+        let id_task = route.params.ID_TASK;
+        let stage_id_current = data.STAGE.ID;
+        let payload = {
+            'rpa' : id_rpa,
+            'task': id_task,
+            'stage_id_next' : stage_id,
+            'stage_id_current' : stage_id_current
+        };
+        console.log(payload);
+        let url = `/signature-detail.php`;
+        POST_DATA(`${url}`, payload).then(res => {
+            console.log(res)
+            if(res['success'] == 1){
+                setData(res['data'])
+                setStages(res['stages'])
+            }
+            setIsLoading(true)
+         }).catch((error)=>{
+            console.log("Api call error");
+            alert(error.message);
+         });
+    }
     function renderHeader() {
         return (
             <View style={{flex: 1, backgroundColor: COLORS.white, borderBottomColor: COLORS.darkgray, borderBottomWidth: 1}}>
@@ -439,37 +481,49 @@ const Detail = ({ route, navigation }) => {
     }
     function renderBottomButton () {
         return (
-            <View style={{flex: 1, flexDirection: 'row', backgroundColor: COLORS.white, borderTopColor: COLORS.darkgray, borderTopWidth: 1}}>
-              
-                {/* Start Reading */}
-                <TouchableOpacity
-                    style={{
+            <View style={{flex: 1, backgroundColor: COLORS.white, borderTopColor: COLORS.darkgray, borderTopWidth: 1}}>
+                {isLoading == true ? (
+                    <TouchableOpacity
+                        style={{
+                            flex: 1,
+                            backgroundColor: COLORS.oragin,
+                            marginHorizontal: SIZES.largeTitle,
+                            marginVertical: SIZES.base,
+                            borderRadius: SIZES.base,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                        onPress={toggleModal}
+                    >
+                    
+                        <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+                            <Image
+                                source={icons.up_down}
+                                resizeMode="cover"
+                                style= {{
+                                    width: 15,
+                                    height: 15,
+                                    tintColor: COLORS.white
+                                }}
+                            />
+
+                            <Text style={{color: COLORS.white, ...FONTS.body4, marginLeft: SIZES.base}}>Xác nhận</Text>
+                        </View>
+            
+                    </TouchableOpacity>
+                ) : (
+                    <View style={{
                         flex: 1,
                         backgroundColor: COLORS.oragin,
-                        marginHorizontal: SIZES.largeTitle,
+                        marginHorizontal: SIZES.base,
                         marginVertical: SIZES.base,
                         borderRadius: SIZES.base,
                         alignItems: 'center',
                         justifyContent: 'center',
-                    }}
-                    onPress={toggleModal}
-                >
-                
-                    <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                        <Image
-                            source={icons.up_down}
-                            resizeMode="cover"
-                            style= {{
-                                width: 15,
-                                height: 15,
-                                tintColor: COLORS.white
-                            }}
-                        />
-
-                        <Text style={{color: COLORS.white, ...FONTS.body4, marginLeft: SIZES.base}}>Xác nhận</Text>
+                    }}>
+                        <ActivityIndicator animating={true} color="#FFF" />
                     </View>
-           
-                </TouchableOpacity>
+                )}
             </View>
         )
     }
@@ -481,7 +535,7 @@ const Detail = ({ route, navigation }) => {
             </View>
             <View style={{flex: 10}}>
                 <ScrollView style={{flexGrow: 1}}
-                                 nestedScrollEnabled={true}>
+                    nestedScrollEnabled={true}>
                     {renderTitle()}
                     {renderInfoTask()}
                     {(data.TOTAL_FILE > 0) && (renderFileSignature())}
@@ -496,28 +550,43 @@ const Detail = ({ route, navigation }) => {
 
                 <Modal isVisible={isModalVisible}>
                     <View style={{backgroundColor: COLORS.white, borderRadius: SIZES.padding}}>
-                        <View style={styles.stage}>
-                            <TouchableOpacity style={styles.itemStage}>
-                                <Text style={{color: 'green', ...FONTS.body4}}>Trưởng ban công nghệ</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={styles.stage}>
-                            <TouchableOpacity style={styles.itemStage}>
-                                <Text style={{color: 'green', ...FONTS.body4}}>Trưởng bộ phận</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={styles.stage}>
-                            <TouchableOpacity style={styles.itemStage}>
-                                <Text style={{color: 'green', ...FONTS.body4}}>Xác nhận công</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={styles.stage}>
-                            <TouchableOpacity style={styles.itemStage}>
-                                <Text style={{color: 'green', ...FONTS.h6}}>Trưởng phòng HCNS</Text>
-                            </TouchableOpacity>
-                        </View>
+                        <FlatList
+                            showsHorizontalScrollIndicator={false}
+                            renderItem={({ item }) => {
+                                if(item.ID !== data.STAGE.ID) {
+                                    return (
+                                        <View style={styles.stage}>
+                                            <TouchableOpacity style={styles.itemStage} onPress={() => createAlert(item.ID)}>
+                                                <Text style={{color: `#${item.COLOR}`, ...FONTS.body4}}>{item.NAME}</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )
+                                }else{
+                                    return(
+                                        <View style={styles.stage}>
+                                            <View style={{flexDirection: 'row', paddingVertical: 10}} >
+                                                <Text style={{color: `#${item.COLOR}`, ...FONTS.body4}}>{item.NAME}</Text>
+                                            </View>
+                                            <View style={{marginLeft: SIZES.base, position: 'absolute', top: 10, right: 10}}>
+                                                    <Image 
+                                                        source={icons.location}
+                                                        resizeMode="cover"
+                                                        style= {{
+                                                            width: 22,
+                                                            height: 22,
+                                                            tintColor: COLORS.primary
+                                                        }}
+                                                    />
+                                                </View>
+                                        </View>
+                                    )
+                                }
+                                
+                            }}
+                            data={stages}
+                            keyExtractor={item => `s${item.ID}`}
+                        />
                         <View style={styles.stageEnd}>
-                        
                             <TouchableOpacity style={styles.itemStage}  onPress={toggleModal}>
                                 <Text style={{color: 'red', ...FONTS.body4}}>Đóng</Text>
                             </TouchableOpacity>
