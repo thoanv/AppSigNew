@@ -9,9 +9,9 @@ import {
     ScrollView,
     StyleSheet
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { icons, COLORS, images, SIZES, FONTS } from '../constants'
-import { GET_DATA } from './ultils/api'
+import { GET_DATA } from './ultils/api';
+import PlaceholderHome from '../components/placeholderHome';
 const LineDivider = () => {
     return (
         <View style={{width: 1, paddingVertical: 18}}>
@@ -25,8 +25,10 @@ const Home = ({navigation}) => {
     const [userLogin, setUserLogin] = useState([])
     const [countTask, setCountTask] = useState(0)
     const [countProcedure, setCountProcedure] = useState(0)
+    const [isLoadingData, setIsLoadingData] = useState(false)
     useEffect(() => {
         async function fetchList() {
+            setIsLoadingData(true)
             let url = '/signature-lists.php';
             GET_DATA(`${url}`).then(response => {
                 if(response['success'] == 1){
@@ -34,6 +36,7 @@ const Home = ({navigation}) => {
                     setUserLogin(response['name_user']);
                     setCountProcedure(response['count_procedure']);
                     setCountTask(response['count_task']);
+                    setIsLoadingData(false)
                 }
              }).catch((error)=>{
                 console.log("Api call error");
@@ -162,7 +165,7 @@ const Home = ({navigation}) => {
                          />
                         <Text numberOfLines={2} style={{...FONTS.h6, marginTop: SIZES.base, fontWeight: 'bold', height: 40}}>{value.NAME_TASK}</Text>
                         <View style={{marginTop: SIZES.base}}>
-                            <View style={{flexDirection: 'row', }}>
+                            <View style={{flexDirection: 'row', alignItems: 'center'}}>
                             <Image
                                  source={icons.black_user}
                                  resizeMode="cover"
@@ -170,12 +173,12 @@ const Home = ({navigation}) => {
                                      width: 16,
                                      height: 16,
                                      marginRight: SIZES.base,
-                                     tintColor: COLORS.darkgray
+                                     tintColor: COLORS.darkgrayText
                                  }}
                              />
-                             <Text style={{...FONTS.body5, color: COLORS.darkgray}}>{value.CREATED_BY.LAST_NAME} {value.CREATED_BY.NAME}</Text>
+                             <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>{value.CREATED_BY.LAST_NAME} {value.CREATED_BY.NAME}</Text>
                             </View>
-                            <View style={{flexDirection: 'row', marginTop: 2}}>
+                            <View style={{flexDirection: 'row', marginTop: 2, alignItems: 'center'}}>
                                 <Image
                                      source={icons.clock}
                                      resizeMode="cover"
@@ -183,10 +186,10 @@ const Home = ({navigation}) => {
                                          width: 16,
                                          height: 16,
                                          marginRight: SIZES.base,
-                                         tintColor: COLORS.darkgray
+                                         tintColor: COLORS.darkgrayText
                                      }}
                                  />
-                                 <Text style={{...FONTS.body4, color: COLORS.darkgray}}>{value.CREATED_AT}</Text>
+                                 <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>{value.CREATED_AT}</Text>
                                 </View>
                         </View>
                      </View>
@@ -245,9 +248,18 @@ const Home = ({navigation}) => {
                     {renderButtonSection()}
                 </View>
                 <View style={{flex: 10}}>
-                    <ScrollView>
-                        {renderDataSection()}
-                    </ScrollView>
+                    {isLoadingData ? (
+                        <>
+                        <PlaceholderHome/>
+                        <PlaceholderHome/>
+                        <PlaceholderHome/>
+                        </>
+                    ):(
+                        <ScrollView>
+                            {renderDataSection()}
+                        </ScrollView>
+                    )}
+                    
                 </View>
             </View>
 

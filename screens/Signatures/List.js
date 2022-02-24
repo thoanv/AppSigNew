@@ -6,17 +6,21 @@ import {
     TouchableOpacity,
     Image,
     FlatList,
-    ActivityIndicator
+    ActivityIndicator,
+    Dimensions
 } from 'react-native';
 import { COLORS, FONTS, icons, SIZES } from '../../constants';
 import { POST_DATA } from '../ultils/api';
+import PlaceholderList from '../../components/placeholderList';
 const List = ({ route, navigation }) => {
     const [data, setData] = useState([]);
     const [title, setTitle] = useState('');
     const [limit, setLimit] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingData, setIsLoadingData] = useState(false);
     const [empty, setEmpty] = useState(false);
     useEffect(() => {
+        setIsLoadingData(true)
         const id_rpa = route.params.ID_RPA;
         const name_rpa = route.params.NAME_RPA;
         setTitle(name_rpa);
@@ -28,7 +32,8 @@ const List = ({ route, navigation }) => {
         POST_DATA(`${url}`, payload).then(res => {
             if(res['success'] == 1){
                 setData(res['data']);
-                setLimit(limit+5);
+                setLimit(limit+15);
+                setIsLoadingData(false)
             }
          }).catch((error)=>{
             console.log("Api call error");
@@ -99,7 +104,6 @@ const List = ({ route, navigation }) => {
         )
     }
     const _onEndReachedLoad = () => {
-        console.log(limit)
         if(!empty){
             setIsLoading(true)
             const id_rpa = route.params.ID_RPA;
@@ -114,7 +118,7 @@ const List = ({ route, navigation }) => {
                         const result =  data.concat(res['data']);
                         console.log(res['data'])
                         setData(result);
-                        setLimit(limit+5);
+                        setLimit(limit+15);
                     }
                     else{
                         setEmpty(true)
@@ -132,6 +136,7 @@ const List = ({ route, navigation }) => {
         setData([]);
         setEmpty(false);
         setIsLoading(false);
+        setIsLoadingData(true);
         const id_rpa = route.params.ID_RPA;
         let payload = {
             'rpa' : id_rpa,
@@ -142,7 +147,8 @@ const List = ({ route, navigation }) => {
             setLimit(limit_);
             if(res['success'] == 1){
                 setData(res['data']);
-                setLimit(5);
+                setLimit(15);
+                setIsLoadingData(false);
             }
          }).catch((error)=>{
             console.log("Api call error");
@@ -163,7 +169,7 @@ const List = ({ route, navigation }) => {
                 }}
                 refreshing={false}
                 onRefresh={() => _handleOnRefresh()}
-                onEndReachedThreshold={0.1}
+                onEndReachedThreshold={0.5}
                 onEndReached={() => 
                     _onEndReachedLoad()
                 }
@@ -189,7 +195,7 @@ const List = ({ route, navigation }) => {
                                 />
                                 <View style={styles.content}>
                                     <View style={styles.contentHeader}>
-                                        <Text  style={styles.name}>{item.NAME}1</Text>
+                                        <Text  style={styles.name}>{item.NAME}</Text>
                                     </View>
                                     <View style={{marginTop: SIZES.base}}>
                                         <View style={{flexDirection: 'row'}}>
@@ -357,11 +363,21 @@ const List = ({ route, navigation }) => {
             </View>
             {/* Description */}
             <View style={{flex: 10}}>
-                {renderBody()}
+                {isLoadingData ? (
+                    <>
+                        <PlaceholderList />
+                        <PlaceholderList />
+                        <PlaceholderList />
+                        <PlaceholderList />
+                        <PlaceholderList />
+                        <PlaceholderList />
+                    </>
+                ):(
+                    renderBody()
+                )}
+               
                 {isLoading == true && (
-                    <View>
-                        <ActivityIndicator animating={isLoading} color='#000' />
-                    </View>
+                    <PlaceholderList />
                 )}
                
             </View>
@@ -403,6 +419,7 @@ const styles = StyleSheet.create({
         fontSize:16,
         fontWeight:"bold",
     },
+    
 })
 
 export default List;

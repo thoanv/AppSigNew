@@ -11,20 +11,26 @@ import {
     FlatList,
     Animated,
     ActivityIndicator,
-    Alert 
+    Alert,
+    PermissionsAndroid,
+    Platform,
 } from 'react-native';
 import { COLORS, FONTS, icons, SIZES } from '../../constants';
 import BorderHorizontal from '../../components/borderHorizontal';
+import PlaceholderDetail from '../../components/placeholderDetail';
 import Dot from '../../components/dot';
 import { POST_DATA } from '../ultils/api';
 import Modal from "react-native-modal";
+import RNFetchBlob from 'rn-fetch-blob';
 const width_screen  = Dimensions.get('window').width;
 
 const Detail = ({ route, navigation }) => {
     const [data, setData] = useState([]);
     const [stages, setStages] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    React.useEffect(() => {
+    const [isLoadingData, setIsLoadingData] = useState(false);
+    useEffect(() => {
+        setIsLoadingData(true)
         let id_rpa = route.params.ID_RPA;
         let id_task = route.params.ID_TASK;
         let payload = {
@@ -36,6 +42,7 @@ const Detail = ({ route, navigation }) => {
             if(res['success'] == 1){
                 setData(res['data'])
                 setStages(res['stages'])
+                setIsLoadingData(false)
             }
          }).catch((error)=>{
             console.log("Api call error");
@@ -305,7 +312,7 @@ const Detail = ({ route, navigation }) => {
                             <Dot/>
                             <TouchableOpacity
                                 style={styles.button}
-                                onPress={()=> navigation.navigate("Signature")}
+                                onPress={()=> checkPermission(item.PATH)}
                             >
                                 <Text style={{color: COLORS.primary, fontWeight: 'bold'}}>Tải xuống</Text> 
                             </TouchableOpacity>
@@ -527,6 +534,78 @@ const Detail = ({ route, navigation }) => {
             </View>
         )
     }
+    const checkPermission = async (path) => {
+        console.log(path)
+    
+        if (Platform.OS === 'ios') {
+          downloadFile(path);
+        } else {
+          try {
+            const granted = await PermissionsAndroid.request(
+              PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+              {
+                title: 'Storage Permission Required',
+                message:
+                  'Application needs access to your storage to download File',
+              }
+            );
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+              // Start downloading
+              downloadFile(path);
+              console.log('Storage Permission Granted.');
+            } else {
+              // If permission denied then show alert
+              Alert.alert('Error','Storage Permission Not Granted');
+            }
+          } catch (err) {
+            // To handle permission related exception
+            console.log("++++"+err);
+          }
+        }
+      };
+      const downloadFile = (path) => {
+   
+        // Get today's date to add the time suffix in filename
+        let date = new Date();
+        // File URL which we want to download
+        let FILE_URL = path;    
+        // Function to get extention of the file url
+        let file_ext = getFileExtention(FILE_URL);
+       
+        file_ext = '.' + file_ext[0];
+       
+        // config: To get response by passing the downloading related options
+        // fs: Root directory path to download
+        const { config, fs } = RNFetchBlob;
+        let RootDir = fs.dirs.PictureDir;
+        let options = {
+          fileCache: true,
+          addAndroidDownloads: {
+            path:
+              RootDir+
+              '/file_' + 
+              Math.floor(date.getTime() + date.getSeconds() / 2) +
+              file_ext,
+            description: 'downloading file...',
+            notification: true,
+            // useDownloadManager works with Android only
+            useDownloadManager: true,   
+          },
+        };
+        config(options)
+          .fetch('GET', FILE_URL)
+          .then(res => {
+            // Alert after successful downloading
+            console.log('res -> ', JSON.stringify(res));
+            alert('Tải file thành công.');
+          });
+      };
+    
+      const getFileExtention = fileUrl => {
+        // To get the file extension
+        return /[.]/.exec(fileUrl) ?
+                 /[^.]+$/.exec(fileUrl) : undefined;
+      };
     return (
         <SafeAreaView  style={styles.container}>
             
@@ -534,18 +613,24 @@ const Detail = ({ route, navigation }) => {
                 {renderHeader()}
             </View>
             <View style={{flex: 10}}>
-                <ScrollView style={{flexGrow: 1}}
+                {isLoadingData ? (
+                    <PlaceholderDetail/>
+                ):(
+                    <ScrollView style={{flexGrow: 1}}
                     nestedScrollEnabled={true}>
-                    {renderTitle()}
-                    {renderInfoTask()}
-                    {(data.TOTAL_FILE > 0) && (renderFileSignature())}
-                    {renderUserSignature()}
-                </ScrollView>
+                        {renderTitle()}
+                        {renderInfoTask()}
+                        {(data.TOTAL_FILE > 0) && (renderFileSignature())}
+                        {renderUserSignature()}
+                    </ScrollView>
+                )}
+                
             </View>
-            <View style={{height: 60, marginBottom: 0}}>
-                {renderBottomButton()}
-            </View>
-           
+            {!isLoadingData && (
+                <View style={{height: 60, marginBottom: 0}}>
+                    {renderBottomButton()}
+                </View>
+            )}
             <View>
 
                 <Modal isVisible={isModalVisible}>

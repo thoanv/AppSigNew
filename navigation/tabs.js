@@ -33,18 +33,18 @@ const Tabs = () => {
                                     }}
                                 />
                             )
-                        case "Notification":
-                            return (
-                                <Image
-                                    source={icons.bell}
-                                    resizeMode="cover"
-                                    style={{
-                                        tintColor: tintColor,
-                                        width: 25,
-                                        height: 25
-                                    }}
-                                />
-                            )
+                        // case "Notification":
+                        //     return (
+                        //         <Image
+                        //             source={icons.bell}
+                        //             resizeMode="cover"
+                        //             style={{
+                        //                 tintColor: tintColor,
+                        //                 width: 25,
+                        //                 height: 25
+                        //             }}
+                        //         />
+                        //     )
             
                         case "Profile":
                             return (
@@ -64,7 +64,7 @@ const Tabs = () => {
         >
 
             <Tab.Screen name="Home" component={Home} options={{headerShown: false}}/>
-            <Tab.Screen name="Notification" component={Notification} options={{headerShown: false}}/>
+            {/* <Tab.Screen name="Notification" component={Notification} options={{headerShown: false}}/> */}
             <Tab.Screen name="Profile" component={Profile} options={{headerShown: false}}/>
         </Tab.Navigator>
     )

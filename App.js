@@ -100,7 +100,14 @@ export default function App({ navigation }) {
                 });
 
             },
-            signOut: () => dispatch({ type: 'SIGN_OUT' }),
+            signOut: async() => {
+              try {
+                await AsyncStorage.removeItem('userToken');
+              } catch (e) {
+                console.log(e);
+              }
+              dispatch({ type: 'SIGN_OUT' });
+            },
             signUp: async (data) => {
               dispatch({ type: 'SIGN_IN', token: 'dummy-auth-token' });
             },

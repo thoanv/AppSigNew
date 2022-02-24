@@ -6,7 +6,6 @@ import {
     TouchableOpacity,
     Image,
     Dimensions,
-    Picker,
     ActivityIndicator,
     Alert 
 } from 'react-native';
@@ -22,7 +21,7 @@ const Signature = ({ route, navigation }) => {
     const [file, setFile] = useState();
     const [visibleType, setVisibleType] = useState(3);
     const [signature, setSignature] = useState('');
-    const [localSignature, setLocalSignature] = useState([]);
+    const [localSignature, setLocalSignature] = useState({});
     const [pageCurrent, setPageCurrent] = useState(0);
     const [totalPage, setTotalPage] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
@@ -42,8 +41,8 @@ const Signature = ({ route, navigation }) => {
         let url = `/signature-sign.php`;
         POST_DATA(`${url}`, payload).then(res => {
             if(res['success'] == 1){
-                console.log(res)
                 setLocalSignature(res['data']);
+               
                 setSignature(res['signature'])
                 setFile(res['file'])
             }
@@ -200,7 +199,6 @@ const Signature = ({ route, navigation }) => {
         let url = `/signature-sign.php`;
         POST_DATA(`${url}`, payload).then(res => {
             if(res['success'] == 1){
-                console.log(res)
                 if(res.access_token_vnpt)
                     setAccessTokenVnpt(res.access_token_vnpt);
                 if(res.tranId)
@@ -230,7 +228,7 @@ const Signature = ({ route, navigation }) => {
         let url = `/signature-sign.php`;
         POST_DATA(`${url}`, payload).then(res => {
             if(res['success'] == 1){
-                setLocalSignature([]);
+                setLocalSignature({});
                 setSignature('')
                 setFile(res['file'])
                 navigation.goBack();
@@ -366,9 +364,12 @@ const Signature = ({ route, navigation }) => {
                 {renderBody()}
             </View>
             {/* Buttons */}
-            <View style={{height: 60, marginBottom: 0}}>
-                {renderFooter()}
-            </View>
+            {Object.keys(localSignature).length > 0 && (
+                <View style={{height: 60, marginBottom: 0}}>
+                    {renderFooter()}
+                </View>
+            )}
+            
         </View>
     )
    
