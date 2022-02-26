@@ -55,8 +55,8 @@ const Home = ({navigation}) => {
                 }}
             >
                 <View style={{flex: 1}}>
-                    <Text style={{...FONTS.h2}}>Hello!</Text>
-                    <Text style={{...FONTS.body3, color: COLORS.darkgrayText}}>{userLogin}</Text>
+                    <Text style={{...FONTS.h2}}>Xin chào!</Text>
+                    <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>{userLogin}</Text>
                 </View>
                 <View style={{
                     alignItems: 'center',
@@ -124,7 +124,7 @@ const Home = ({navigation}) => {
                         <Text
                             style={{marginLeft: SIZES.base, ...FONTS.body3, color: COLORS.white}}
                         >
-                            {countTask} Task
+                            {countTask} Công việc
                         </Text>
                     </View>
 
@@ -166,7 +166,7 @@ const Home = ({navigation}) => {
                         <Text numberOfLines={2} style={{...FONTS.h6, marginTop: SIZES.base, fontWeight: 'bold', height: 40}}>{value.NAME_TASK}</Text>
                         <View style={{marginTop: SIZES.base}}>
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                            <Image
+                            {/* <Image
                                  source={icons.black_user}
                                  resizeMode="cover"
                                  style= {{
@@ -175,11 +175,12 @@ const Home = ({navigation}) => {
                                      marginRight: SIZES.base,
                                      tintColor: COLORS.darkgrayText
                                  }}
-                             />
+                             /> */}
+                             <Text style={{...FONTS.body4, color: COLORS.darkgrayText, marginRight: SIZES.base}}>Trình bới:</Text>
                              <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>{value.CREATED_BY.LAST_NAME} {value.CREATED_BY.NAME}</Text>
                             </View>
                             <View style={{flexDirection: 'row', marginTop: 2, alignItems: 'center'}}>
-                                <Image
+                                {/* <Image
                                      source={icons.clock}
                                      resizeMode="cover"
                                      style= {{
@@ -188,7 +189,8 @@ const Home = ({navigation}) => {
                                          marginRight: SIZES.base,
                                          tintColor: COLORS.darkgrayText
                                      }}
-                                 />
+                                 /> */}
+                                 <Text style={{...FONTS.body4, color: COLORS.darkgrayText, marginRight: SIZES.base}}>Ngày trình:</Text>
                                  <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>{value.CREATED_AT}</Text>
                                 </View>
                         </View>
@@ -202,29 +204,36 @@ const Home = ({navigation}) => {
             return (
                 <View style={{flex: 1, marginBottom: 25}}>
                     {/* Hearder */}
-                    <View style={{paddingHorizontal: SIZES.padding, flexDirection: 'row', justifyContent: 'space-between'}}>
-                        <Text style={{color: COLORS.black, ...FONTS.h4}}>{item.TITLE}</Text>
-
                         <TouchableOpacity
                             onPress={()=> navigation.navigate("List", {
                                 ID_RPA: item.ID,
                                 NAME_RPA: item.TITLE,
                             })}
                         >
-                            <Text style={{color: COLORS.primary, ...FONTS.body4, alignSelf: 'flex-start', marginRight: SIZES.base}}>Xem thêm ></Text>
+                            <View style={{paddingHorizontal: SIZES.padding, flexDirection: 'row', alignItems: 'center'}}>
+                                <Text style={{color: COLORS.black, ...FONTS.h6, marginRight: SIZES.base}}>{item.TITLE}</Text>
+                                <Image 
+                                    source={icons.right}
+                                    style={{
+                                        width: 13,
+                                        height: 13,
+                                        alignItems: 'stretch',
+                                    }}
+                                />
+                                
+                            </View>
                         </TouchableOpacity>
-                    </View>
-
-                    {/* Books */}
-                    <View style={{flex: 1, marginTop: SIZES.base}}>
-                        <FlatList
-                            horizontal
-                            showsHorizontalScrollIndicator={false}
-                            renderItem={renderItemChild}
-                            data={item.LIST_TASK}
-                            keyExtractor={item => `${item.ID_TASK}`}
-                        />
-                    </View>
+                        {/* Books */}
+                        <View style={{flex: 1, marginTop: SIZES.base}}>
+                            <FlatList
+                                horizontal
+                                showsHorizontalScrollIndicator={false}
+                                renderItem={renderItemChild}
+                                data={item.LIST_TASK}
+                                keyExtractor={item => `${item.ID_TASK}`}
+                            />
+                        </View>
+                    
                 </View>
             )
         }
@@ -241,7 +250,7 @@ const Home = ({navigation}) => {
     }
 
     return (
-        <SafeAreaView style={{flex: 1, backgroundColor: COLORS.white}}>
+        <SafeAreaView style={{flex: 1, backgroundColor: '#F4F5F7'}}>
             <View style={styles.container}>
                 <View style={{flex: 3}}>
                     {renderHeader()}

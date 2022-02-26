@@ -301,7 +301,7 @@ const List = ({ route, navigation }) => {
                                                                     style={{
                                                                         width: 35,
                                                                         height: 35,
-                                                                        borderRadius: 15,
+                                                                        borderRadius: 35,
                                                                         borderWidth: 1,
                                                                         borderColor: COLORS.darkgray
                                                                     }}
@@ -312,7 +312,7 @@ const List = ({ route, navigation }) => {
                                                                     style={{
                                                                         width: 35,
                                                                         height: 35,
-                                                                        borderRadius: 15,
+                                                                        borderRadius: 35,
                                                                         borderWidth: 1,
                                                                         borderColor: COLORS.darkgray
                                                                     }}

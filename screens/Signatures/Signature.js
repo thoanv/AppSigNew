@@ -197,6 +197,7 @@ const Signature = ({ route, navigation }) => {
             'visibleType' : visibleType
         };
         let url = `/signature-sign.php`;
+        console.log(payload);
         POST_DATA(`${url}`, payload).then(res => {
             if(res['success'] == 1){
                 if(res.access_token_vnpt)

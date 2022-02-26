@@ -299,17 +299,22 @@ const Detail = ({ route, navigation }) => {
                             <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>{item.CREATED_TIME}</Text>
                         </View>
                         <View style={{flexDirection:'row'}}>
-                            <TouchableOpacity
-                                style={styles.button}
-                                onPress={()=> navigation.navigate("Signature", {
-                                    rpa: data.ID_RPA,
-                                    task: data.ID_TASK,
-                                    file_id: item.ID
-                                })}
-                            >
-                                <Text style={{color: COLORS.primary, fontWeight: 'bold'}}>Ký</Text>
-                            </TouchableOpacity>
-                            <Dot/>
+                            {data.checkCreatedByAndUserSig == true && (
+                                <>
+                                <TouchableOpacity
+                                    style={styles.button}
+                                    onPress={()=> navigation.navigate("Signature", {
+                                        rpa: data.ID_RPA,
+                                        task: data.ID_TASK,
+                                        file_id: item.ID
+                                    })}
+                                >
+                                    <Text style={{color: COLORS.primary, fontWeight: 'bold'}}>Ký</Text>
+                                </TouchableOpacity>
+                                <Dot/>
+                                </>
+                            )}
+                            
                             <TouchableOpacity
                                 style={styles.button}
                                 onPress={()=> checkPermission(item.PATH)}

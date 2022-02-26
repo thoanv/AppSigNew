@@ -3,17 +3,12 @@ import {
     View,
     Text,
     TouchableOpacity,
-    TouchableNativeFeedback,
     Image,
     TextInput,
-    Modal,
-    FlatList,
     KeyboardAvoidingView,
     ScrollView,
     Platform,
     StyleSheet,
-    TouchableWithoutFeedback,
-    ImageBackground
 } from 'react-native';
 
 import { COLORS, FONTS, icons, images, SIZES } from '../../constants';
@@ -45,83 +40,102 @@ const SignIn = ( { navigation } ) => {
 
     function renderHeader() {
         return (
-            <TouchableOpacity
-                style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginTop: SIZES.padding * 2,
-                }}
-                onPress={() => console.log("Sign Up")}
-            >
+           <View style={{flex: 1, height: 50, backgroundColor: COLORS.white}}>
 
-                <Text style={{marginLeft: SIZES.padding * 1.5, color: COLORS.white, ...FONTS.h4}}>Đăng nhập</Text>
-            </TouchableOpacity>
+           </View>
         )
     }
-    function renderLogo() {
-        return (
-            <View
-                style={{
-                    marginTop: SIZES.padding * 5,
-                    height: 100,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                }}
-            >
-                <Image
-                    source={images.logo_hpl}
-                    resizeMode="contain"
-                    style={{
-                        width: "60%",
-                    }}
-                />
-            </View>
-        )
-    }
+    
     function renderForm() {
         return (
             <View
                 style={{
-                    marginTop: SIZES.padding * 3,
-                    marginHorizontal: SIZES.padding * 3,
+                    paddingHorizontal: SIZES.padding * 4
                 }}
             >
                 {/* Full name */}
                 <View style={{
-                    marginTop: SIZES.padding * 3
+                    marginTop: SIZES.padding * 8
                 }}>
-                    <Text style={styles.title}>Tên đăng nhập</Text>
-                    <TextInput 
-                        style={{
-                            marginVertical: SIZES.padding,
-                            borderBottomColor: COLORS.white,
-                            borderBottomWidth: 1,
-                            height: 40,
-                            color: COLORS.white,
-                            ...FONTS.body3
-                        }}
-                        placeholder="Vui lòng nhập ..."
-                        placeholderTextColor={COLORS.white}
-                        selectionColor={COLORS.white}
-                        onChangeText={(val) => textInputChange(val)}
-                    />
+                    <View style={{justifyContent: 'center', alignItems: 'center', marginBottom: SIZES.largeTitle}}>
+                        <Text style={{...FONTS.body1, color: COLORS.white}}>Đăng nhập</Text>
+                        <View style={{
+                                shadowColor: "#000",
+                                shadowOffset: {
+                                    width: 0,
+                                    height: 1,
+                                },
+                                shadowOpacity: 0.3,
+                                shadowRadius: 10,
+
+                                elevation: 10,
+                                backgroundColor: COLORS.white, 
+                                padding: SIZES.padding*2, 
+                                borderRadius: 20, 
+                                marginTop: SIZES.padding*3}}>
+                            <Image 
+                                source={images.logo}
+                                style={{
+                                    width: 50,
+                                    height: 50
+                                }}
+                            />
+                        </View>
+                    </View>
+                    <View>
+                        <Image 
+                            source={icons.user}
+                            style={{
+                                width: 18,
+                                height: 18,
+                                tintColor: COLORS.white,
+                                position: 'absolute',
+                                bottom: 22
+                            }}
+                        />
+                        <TextInput 
+                            style={{
+                                marginVertical: SIZES.padding,
+                                borderBottomColor: COLORS.white,
+                                borderBottomWidth: 1,
+                                height: 40,
+                                color: COLORS.black,
+                                ...FONTS.body3,
+                                textAlign: 'center'
+                            }}
+                            placeholder="Tên đăng nhập"
+                            placeholderTextColor={COLORS.border}
+                            selectionColor={COLORS.white}
+                            onChangeText={(val) => textInputChange(val)}
+                        />
+                    </View>
+                    
                 </View>
 
                 {/* Password */}
                 <View style={{
                     marginTop: SIZES.padding * 2
                 }}>
-                    <Text style={styles.title}>Mật khẩu</Text>
+                        <Image 
+                            source={icons.padlock}
+                            style={{
+                                width: 18,
+                                height: 18,
+                                tintColor: COLORS.white,
+                                position: 'absolute',
+                                bottom: 12
+                            }}
+                        />
                     <TextInput 
                         style={{
-                            marginVertical: SIZES.padding,
                             borderBottomColor: COLORS.white,
                             borderBottomWidth: 1,
                             height: 40,
-                            color: COLORS.white,
-                            ...FONTS.body3
+                            color: COLORS.black,
+                            ...FONTS.body3,
+                            textAlign: 'center'
                         }}
-                        placeholder="Vui lòng nhập ..."
+                        placeholder="Mật khẩu"
                         placeholderTextColor={COLORS.white}
                         selectionColor={COLORS.white}
                         secureTextEntry={!showPassword}
@@ -131,7 +145,7 @@ const SignIn = ( { navigation } ) => {
                         style={{
                             position: 'absolute',
                             right: 0,
-                            bottom: 10,
+                            bottom: 0,
                             height: 30,
                             width: 30,
                         }}
@@ -147,28 +161,30 @@ const SignIn = ( { navigation } ) => {
                         />
                     </TouchableOpacity>
                 </View>
+                <View style={{margin: SIZES.padding * 3, marginTop: SIZES.padding * 6}}>
+                    <TouchableOpacity
+                            style={{
+                            height: 50,
+                            borderRadius: SIZES.base,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            
+                        }}
+                        onPress={() => {loginHandle( data )}}
+                    >
+                        <LinearGradient colors={['#F1F1F1', '#fff8f5', '#F7F7F7']} style={{borderRadius: 40,}}>
+                            <Text style={styles.buttonText,{paddingVertical: 12, paddingHorizontal: 60, color: '#FF9417', ...FONTS.body3}}>
+                                Đăng nhập
+                            </Text>
+                            </LinearGradient>   
+                    </TouchableOpacity>
+                    
+                </View>
+               
             </View>
         )
     }
     
-    function renderButton() {
-        return (
-            <View style={{margin: SIZES.padding * 3, marginTop: SIZES.padding * 4}}>
-                <TouchableOpacity
-                    style={{
-                        height: 60,
-                        backgroundColor: '#F5852B',
-                        borderRadius: SIZES.radius,
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                    }}
-                    onPress={() => {loginHandle( data )}}
-                >
-                    <Text style={{color: COLORS.white, ...FONTS.h4}}>ĐĂNG NHẬP</Text>
-                </TouchableOpacity>
-            </View>
-        )
-    }
 
 
     return (
@@ -176,22 +192,23 @@ const SignIn = ( { navigation } ) => {
             behavior={Platform.OS === "ios" ? "padding" : null}
             style={{
                 flex: 1,
+                backgroundColor: COLORS.white
             }}
         >
-           <LinearGradient
-            colors={[COLORS.lime, COLORS.emerald]}
-            style={{
-                flex: 1,
-            }}
-           >
-
-               <ScrollView>
-                   {renderHeader()}
-                   {renderLogo()}
-                   {renderForm()}
-                   {renderButton()}
-               </ScrollView>
-           </LinearGradient>
+            <LinearGradient
+                start={{x: 0.5, y: 0.5}} end={{x: 0.5, y: 1.5}}
+                colors={['#FF9417', '#FEDC10']}
+                style={{
+                    flex: 10,
+                }}
+            >
+                {renderForm()}
+                {/* {renderButton()} */}
+                <View style={{alignItems: 'center', position: 'absolute', bottom: 10, left: '8%'}}>
+                    <Text style={{color: COLORS.white, marginBottom: 5, fontWeight: 'bold'}}>Hai Phat Land Sign</Text>
+                    <Text style={{color: COLORS.white}}>Copyright © 2022 Hai Phat Land - All Rights Reserved</Text>
+                </View>
+            </LinearGradient>
         </KeyboardAvoidingView>
     )
 }

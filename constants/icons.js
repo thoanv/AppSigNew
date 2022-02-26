@@ -26,6 +26,9 @@ const up_down = require("../assets/icons/up_down.png");
 const file = require("../assets/icons/file.png");
 const success = require("../assets/icons/success.png");
 const location = require("../assets/icons/location.png");
+const padlock = require("../assets/icons/padlock.png");
+const right = require("../assets/icons/right.png");
+
 
 export default {
     back,
@@ -55,5 +58,7 @@ export default {
     up_down,
     file,
     success,
-    location
+    location,
+    padlock,
+    right
 }
