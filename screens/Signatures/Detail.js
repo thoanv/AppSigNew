@@ -27,6 +27,7 @@ const width_screen  = Dimensions.get('window').width;
 const Detail = ({ route, navigation }) => {
     const [data, setData] = useState([]);
     const [stages, setStages] = useState([]);
+    const [checkStageCurrents, setCheckStageCurrents] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isLoadingData, setIsLoadingData] = useState(false);
     useEffect(() => {
@@ -43,6 +44,7 @@ const Detail = ({ route, navigation }) => {
                 setData(res['data'])
                 setStages(res['stages'])
                 setIsLoadingData(false)
+                setCheckStageCurrents(res['checkStageCurrent'])
             }
          }).catch((error)=>{
             console.log("Api call error");
@@ -158,43 +160,6 @@ const Detail = ({ route, navigation }) => {
         )
     }
     function renderTitle() {
-        const previouStage = () => {
-            let previous = data.PREVIOUS_STAGE;
-            if(previous){
-                return (
-                    <View style={{flexDirection: 'row'}}>
-                        <View style={{marginRight: SIZES.base, borderColor: COLORS.darkgray, borderWidth: 1, borderRadius: 10, paddingHorizontal: 5}}>
-                            <Text style={{ ...FONTS.body5 }}>
-                                {previous.NAME}
-                            </Text>
-                        </View>
-                        <View style={{ justifyContent: 'center'}}>
-                            <Image
-                                source={icons.right_arrow}
-                                style={{
-                                    width: 15,
-                                    height: 15,
-                                    tintColor: COLORS.black,
-                                }}
-                            />
-                        </View>
-                    </View>
-                )
-            }
-            
-        }
-        const stage = () => {
-            let stage = data.STAGE;
-            if(stage){
-                return (
-                    <View style={{ marginLeft: SIZES.base,  borderColor: COLORS.darkgray, borderWidth: 1, borderRadius: 10, paddingHorizontal: 5}}>
-                        <Text style={{ ...FONTS.body5 }}>
-                            {data.STAGE.NAME}
-                        </Text>
-                    </View>
-                )
-            }
-        }
         return (
             <View style={{flexDirection: 'row', marginBottom: SIZES.base}}>
                 {/* Custom Scrollbar */}
@@ -204,28 +169,61 @@ const Detail = ({ route, navigation }) => {
                             paddingTop: 10,
                             paddingHorizontal: SIZES.base*2,
                             backgroundColor: COLORS.white,
+                            paddingBottom: SIZES.padding,
                         }, styles.shadow]}
                     >
                         <Text style={{...FONTS.h2}}>{data.NAME_TASK}</Text>
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                paddingVertical: SIZES.base
-                            }}
-                        >
-                            <View style={{flex: 1, backgroundColor: COLORS.white}}>
-                                <Text style={{...FONTS.body4}}>
-                                    Giai đoạn:
-                                </Text>
-                                <View style={{flexDirection: 'row', marginTop: SIZES.base}}>
-                                    {previouStage()}
-                                    {stage()}
-                                </View>
-                                
-                            </View>
-                            
+                    </View>
+                </View>
+            </View>
+        )
+    }
+    function renderStage() {
+    
+        const renderItemStage = ({item, index}) => {
+            console.log(item);
+                return (
+                    <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'stretch'}}>
+                       
+                        <View style={{marginBottom: SIZES.base, marginRight: SIZES.base, backgroundColor: `#${item.COLOR}`, color: COLORS.white,  borderColor: `#${item.COLOR}`, borderWidth: 1, borderRadius: 10, paddingHorizontal: 5,}}>
+                            <Text style={{ ...FONTS.body5, color: COLORS.white }}>
+                                {item.NAME}
+                            </Text>
                         </View>
+                        {index < data.stageOfChanges.length-1 && (
+                            <Image 
+                            source={icons.right_arrow}
+                            style={{
+                                width: 10,
+                                height: 10,
+                                marginRight: SIZES.base,
+                                marginTop: 8
+                            }}
+                        />
+                        )}
+                    </View>
+                    
+                )
+        }
+        return (
+            <View style={{flex: 1, marginBottom: SIZES.base}}>
+                <View
+                    style={[{
+                        paddingVertical: 10,
+                        paddingHorizontal: SIZES.base,
+                        backgroundColor: COLORS.white,
+
+                    }, styles.shadow]}
+                >
+                    <Text style={{...FONTS.body3, fontWeight: 'bold', textTransform: 'uppercase'}}>Giai đoạn</Text>
+                    <BorderHorizontal/>
+                    <View style={{flexDirection: 'row', marginTop: SIZES.base}}>
+                    <FlatList
+                            renderItem={renderItemStage}
+                            contentContainerStyle={{flexDirection : "row", flexWrap : "wrap",}}
+                            data={data.stageOfChanges}
+                            keyExtractor={(item, index) => 'key'+index}
+                        />
                     </View>
                 </View>
             </View>
@@ -247,7 +245,7 @@ const Detail = ({ route, navigation }) => {
                                 backgroundColor: COLORS.white,
                             }, styles.shadow]}
                         >
-                            <Text style={{...FONTS.body3, fontWeight: 'bold', textTransform: 'uppercase'}}>Thông tin task</Text>
+                            <Text style={{...FONTS.body3, fontWeight: 'bold', textTransform: 'uppercase'}}>Thông tin công việc</Text>
                             <BorderHorizontal/>
                             {itemTaskUser(icons.user, 'Người tạo', nameUser,  created_at.LOGIN, created_at.WORK_POSITION  )}
                             {itemTask(icons.more, 'Phòng ban', created_at.WORK_DEPARTMENT)}
@@ -347,7 +345,6 @@ const Detail = ({ route, navigation }) => {
                             data={data.FILES}
                             keyExtractor={item => `f${item.ID}`}
                         />
-                      
                     </View>
                 </View>
             </View>
@@ -385,9 +382,7 @@ const Detail = ({ route, navigation }) => {
                                 }}
                             />
                             )}
-                            
                         </View>
-                            
                         <View style={{paddingBottom: SIZES.base}}>
                             <View style={{flexDirection: 'row'}}>
                                 <Text style={{fontWeight: 'bold'}}>{user.LAST_NAME} {user.NAME} </Text>
@@ -399,9 +394,7 @@ const Detail = ({ route, navigation }) => {
                                 <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>{user.WORK_POSITION ? user.WORK_POSITION : 'Nhân viên'}</Text>
                                 
                             </View>
-                            
                         </View>
-                        
                     </View>
                 )
             }
@@ -492,55 +485,61 @@ const Detail = ({ route, navigation }) => {
         )
     }
     function renderBottomButton () {
-        return (
-            <View style={{flex: 1, backgroundColor: COLORS.white, borderTopColor: COLORS.darkgray, borderTopWidth: 1}}>
-                {isLoading == true ? (
-                    <TouchableOpacity
-                        style={{
-                            flex: 1,
-                            backgroundColor: COLORS.oragin,
-                            marginHorizontal: SIZES.largeTitle,
-                            marginVertical: SIZES.base,
-                            borderRadius: SIZES.base,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                        onPress={toggleModal}
-                    >
-                    
-                        <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                            <Image
-                                source={icons.up_down}
-                                resizeMode="cover"
-                                style= {{
-                                    width: 15,
-                                    height: 15,
-                                    tintColor: COLORS.white
-                                }}
-                            />
-
-                            <Text style={{color: COLORS.white, ...FONTS.body4, marginLeft: SIZES.base}}>Xác nhận</Text>
-                        </View>
+        if(!isLoadingData){
+            if(data.STAGE && checkStageCurrents.includes(data.STAGE.ID)){
+                return (
+                    <View style={{height: 60, marginBottom: 0}}>
+                        <View style={{flex: 1, backgroundColor: COLORS.white, borderTopColor: COLORS.darkgray, borderTopWidth: 1}}>
+                            {isLoading == true ? (
+                                <TouchableOpacity
+                                    style={{
+                                        flex: 1,
+                                        backgroundColor: COLORS.oragin,
+                                        marginHorizontal: SIZES.largeTitle,
+                                        marginVertical: SIZES.base,
+                                        borderRadius: SIZES.base,
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}
+                                    onPress={toggleModal}
+                                >
+                                
+                                    <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+                                        <Image
+                                            source={icons.up_down}
+                                            resizeMode="cover"
+                                            style= {{
+                                                width: 15,
+                                                height: 15,
+                                                tintColor: COLORS.white
+                                            }}
+                                        />
             
-                    </TouchableOpacity>
-                ) : (
-                    <View style={{
-                        flex: 1,
-                        backgroundColor: COLORS.oragin,
-                        marginHorizontal: SIZES.base,
-                        marginVertical: SIZES.base,
-                        borderRadius: SIZES.base,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}>
-                        <ActivityIndicator animating={true} color="#FFF" />
+                                        <Text style={{color: COLORS.white, ...FONTS.body4, marginLeft: SIZES.base}}>Xác nhận</Text>
+                                    </View>
+                        
+                                </TouchableOpacity>
+                            ) : (
+                                <View style={{
+                                    flex: 1,
+                                    backgroundColor: COLORS.oragin,
+                                    marginHorizontal: SIZES.base,
+                                    marginVertical: SIZES.base,
+                                    borderRadius: SIZES.base,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}>
+                                    <ActivityIndicator animating={true} color="#FFF" />
+                                </View>
+                            )}
+                        </View>
                     </View>
-                )}
-            </View>
-        )
+                )
+            }
+        }
+        
     }
     const checkPermission = async (path) => {
-        console.log(path)
     
         if (Platform.OS === 'ios') {
           downloadFile(path);
@@ -567,53 +566,52 @@ const Detail = ({ route, navigation }) => {
             console.log("++++"+err);
           }
         }
-      };
-      const downloadFile = (path) => {
-   
-        // Get today's date to add the time suffix in filename
-        let date = new Date();
-        // File URL which we want to download
-        let FILE_URL = path;    
-        // Function to get extention of the file url
-        let file_ext = getFileExtention(FILE_URL);
-       
-        file_ext = '.' + file_ext[0];
-       
-        // config: To get response by passing the downloading related options
-        // fs: Root directory path to download
-        const { config, fs } = RNFetchBlob;
-        let RootDir = fs.dirs.PictureDir;
-        let options = {
-          fileCache: true,
-          addAndroidDownloads: {
-            path:
-              RootDir+
-              '/file_' + 
-              Math.floor(date.getTime() + date.getSeconds() / 2) +
-              file_ext,
-            description: 'downloading file...',
-            notification: true,
-            // useDownloadManager works with Android only
-            useDownloadManager: true,   
-          },
-        };
-        config(options)
-          .fetch('GET', FILE_URL)
-          .then(res => {
-            // Alert after successful downloading
-            console.log('res -> ', JSON.stringify(res));
-            alert('Tải file thành công.');
-          });
-      };
+    };
+    const downloadFile = (path) => {
+
+    // Get today's date to add the time suffix in filename
+    let date = new Date();
+    // File URL which we want to download
+    let FILE_URL = path;    
+    // Function to get extention of the file url
+    let file_ext = getFileExtention(FILE_URL);
     
-      const getFileExtention = fileUrl => {
-        // To get the file extension
-        return /[.]/.exec(fileUrl) ?
-                 /[^.]+$/.exec(fileUrl) : undefined;
-      };
+    file_ext = '.' + file_ext[0];
+    
+    // config: To get response by passing the downloading related options
+    // fs: Root directory path to download
+    const { config, fs } = RNFetchBlob;
+    let RootDir = fs.dirs.PictureDir;
+    let options = {
+        fileCache: true,
+        addAndroidDownloads: {
+        path:
+            RootDir+
+            '/file_' + 
+            Math.floor(date.getTime() + date.getSeconds() / 2) +
+            file_ext,
+        description: 'downloading file...',
+        notification: true,
+        // useDownloadManager works with Android only
+        useDownloadManager: true,   
+        },
+    };
+    config(options)
+        .fetch('GET', FILE_URL)
+        .then(res => {
+        // Alert after successful downloading
+        console.log('res -> ', JSON.stringify(res));
+        alert('Tải file thành công.');
+        });
+    };
+
+    const getFileExtention = fileUrl => {
+    // To get the file extension
+    return /[.]/.exec(fileUrl) ?
+                /[^.]+$/.exec(fileUrl) : undefined;
+    };
     return (
         <SafeAreaView  style={styles.container}>
-            
             <View style={{flex: 1}}>
                 {renderHeader()}
             </View>
@@ -624,6 +622,7 @@ const Detail = ({ route, navigation }) => {
                     <ScrollView style={{flexGrow: 1}}
                     nestedScrollEnabled={true}>
                         {renderTitle()}
+                        {renderStage()}
                         {renderInfoTask()}
                         {(data.TOTAL_FILE > 0) && (renderFileSignature())}
                         {renderUserSignature()}
@@ -631,27 +630,16 @@ const Detail = ({ route, navigation }) => {
                 )}
                 
             </View>
-            {!isLoadingData && (
-                <View style={{height: 60, marginBottom: 0}}>
-                    {renderBottomButton()}
-                </View>
-            )}
+           
+            {renderBottomButton()}
+           
             <View>
-
                 <Modal isVisible={isModalVisible}>
                     <View style={{backgroundColor: COLORS.white, borderRadius: SIZES.padding}}>
                         <FlatList
                             showsHorizontalScrollIndicator={false}
                             renderItem={({ item }) => {
-                                if(item.ID !== data.STAGE.ID) {
-                                    return (
-                                        <View style={styles.stage}>
-                                            <TouchableOpacity style={styles.itemStage} onPress={() => createAlert(item.ID)}>
-                                                <Text style={{color: `#${item.COLOR}`, ...FONTS.body4}}>{item.NAME}</Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                    )
-                                }else{
+                                if(item.ID == data.STAGE.ID) {
                                     return(
                                         <View style={styles.stage}>
                                             <View style={{flexDirection: 'row', paddingVertical: 10}} >
@@ -676,6 +664,18 @@ const Detail = ({ route, navigation }) => {
                             data={stages}
                             keyExtractor={item => `s${item.ID}`}
                         />
+                        <TouchableOpacity style={styles.stage} onPress={() => createAlert()}>
+                        <View style={styles.itemStage}>
+                                <Text style={{...FONTS.body4, color: COLORS.red}}>Không duyệt</Text>
+                        </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.stage} onPress={() => createAlert()}>
+                            <View style={styles.itemStage}>
+                                    <Text style={{color: COLORS.primary, ...FONTS.body4}}>Duyệt</Text>
+                            </View>
+                        </TouchableOpacity>
+                        
+                                   
                         <View style={styles.stageEnd}>
                             <TouchableOpacity style={styles.itemStage}  onPress={toggleModal}>
                                 <Text style={{color: 'red', ...FONTS.body4}}>Đóng</Text>

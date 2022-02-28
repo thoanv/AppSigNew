@@ -12,6 +12,7 @@ import {
 import { COLORS, FONTS, icons, SIZES } from '../../constants';
 import { POST_DATA } from '../ultils/api';
 import PlaceholderList from '../../components/placeholderList';
+const width_screen  = Dimensions.get('window').width;
 const List = ({ route, navigation }) => {
     const [data, setData] = useState([]);
     const [title, setTitle] = useState('');
@@ -30,6 +31,7 @@ const List = ({ route, navigation }) => {
         };
         let url = `/signature-list-task.php`;
         POST_DATA(`${url}`, payload).then(res => {
+            console.log(res)
             if(res['success'] == 1){
                 setData(res['data']);
                 setLimit(limit+15);
@@ -79,24 +81,11 @@ const List = ({ route, navigation }) => {
                         />
                     </TouchableOpacity>
 
-                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                            <Text style={{...FONTS.h3,}}>{title}</Text>
+                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', width: width_screen}}>
+                            <Text numberOfLines={1} style={{...FONTS.h3,}}>{title}</Text>
                     </View>
 
-                    <TouchableOpacity
-                        style={{marginRight: SIZES.base}}
-                        onPress={() => console.log("Click more")}
-                    >
-                        <Image
-                            source={icons.more_icon}
-                            resizeMode='contain'
-                            style={{
-                                width: 30,
-                                height: 30,
-                                alignSelf: 'flex-end'
-                            }}
-                        />
-                    </TouchableOpacity>
+                
                 </View>
 
 
@@ -202,87 +191,37 @@ const List = ({ route, navigation }) => {
                                             {createBy && (
                                                 <>
                                                 <View style={{flexDirection: 'row', marginRight: SIZES.base*2,  alignItems: 'center',}}>
-                                                    <Image
-                                                        source={icons.black_user}
-                                                        resizeMode="cover"
-                                                        style= {{
-                                                            width: 16,
-                                                            height: 16,
-                                                            marginRight: SIZES.base,
-                                                            tintColor: COLORS.darkgrayText
-                                                        }}
-                                                    />
+                                                    <Text style={{...FONTS.body4, color: COLORS.darkgrayText, marginRight: SIZES.base}}>Người trình: </Text>
                                                     <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>{createBy.FULLNAME}</Text>
-                                                </View>
-                                           
-                                                <View style={{flexDirection: 'row', alignItems: 'center',}}>
-                                                    <Image
-                                                        source={icons.more}
-                                                        resizeMode="cover"
-                                                        style= {{
-                                                            width: 16,
-                                                            height: 16,
-                                                            marginRight: SIZES.base,
-                                                            tintColor: COLORS.darkgrayText
-                                                        }}
-                                                    />
-                                                    <Text style={{...FONTS.body4, color: COLORS.darkgrayText, textTransform: 'capitalize'}}>{createBy.WORK_DEPARTMENT}</Text>
                                                 </View>
                                                 </>
                                             )}
                                         </View>
                                         <View style={{flexDirection: 'row', marginTop: 3}}>
                                             <View style={{flexDirection: 'row', marginRight: SIZES.base*2 , alignItems: 'center',}}>
-                                                <Image
-                                                     source={icons.clock}
-                                                     resizeMode="cover"
-                                                     style= {{
-                                                         width: 16,
-                                                         height: 16,
-                                                         marginRight: SIZES.base,
-                                                         tintColor: COLORS.darkgrayText
-                                                     }}
-                                                />
+                                                <Text style={{...FONTS.body4, color: COLORS.darkgrayText, marginRight: SIZES.base}}>Ngày trình: </Text>
                                                 <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>{item.CREATED_TIME}</Text>
                                             </View>
-                                            {item.checkCreatedByAndUserSig == true && (
-                                                <View style={{flexDirection: 'row' , alignItems: 'center',}}>
-                                                    <Image
-                                                        source={icons.file}
-                                                        resizeMode="cover"
-                                                        style= {{
-                                                            width: 16,
-                                                            height: 16,
-                                                            marginRight: SIZES.base,
-                                                            tintColor: COLORS.darkgrayText,
-                                                        }}
-                                                    />
-                                                    <Text style={{...FONTS.body4, color: COLORS.darkgrayText, fontWeight: 'bold'}}>{item.FILE_SIGNED}/{item.COUNT_FILE}</Text>
-                                                </View>
-                                            )}
                                             
                                         </View>
+                                        {item.checkCreatedByAndUserSig == true && (
+                                        <View style={{flexDirection: 'row', marginTop: 3}}>
+                                            <View style={{flexDirection: 'row', marginRight: SIZES.base*2 , alignItems: 'center',}}>
+                                                <Text style={{...FONTS.body4, color: COLORS.darkgrayText, marginRight: SIZES.base}}>Số File: </Text>
+                                                <Text style={{...FONTS.body4, color: COLORS.darkgrayText, fontWeight: 'bold'}}>{item.FILE_SIGNED}/{item.COUNT_FILE}</Text>
+                                            </View>
+                                        </View>
+                                        )}
                                         {item.STAGE && (
                                             <View style={{flexDirection: 'row', marginTop: 3}}>
                                                 <View style={{flexDirection: 'row', marginRight: SIZES.base*2, alignItems: 'center',}}>
-                                                    <Image
-                                                        source={icons.proccess}
-                                                        resizeMode="cover"
-                                                        style= {{
-                                                            width: 16,
-                                                            height: 16,
-                                                            marginRight: SIZES.base,
-                                                            tintColor: COLORS.darkgrayText,
-                                                        }}
-                                                    />
-                                                    <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>{item.STAGE.NAME}</Text>
+                                                    <Text style={{...FONTS.body4, color: COLORS.darkgrayText, marginRight: SIZES.base}}>Giai đoạn: </Text>
+                                                    <Text style={{...FONTS.body5, color: COLORS.darkgrayText, color: COLORS.white,paddingHorizontal: SIZES.base, borderRadius: 20, backgroundColor: `#${item.STAGE.COLOR}`}}>{item.STAGE.NAME}</Text>
                                                 </View>
                                                 
                                                 
                                             </View>
                                         )}
-                                        
-
                                     </View>
                                     <View style={{marginTop: SIZES.base}}>
                                         <View style={{flexDirection: 'row'}}>

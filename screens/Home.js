@@ -176,7 +176,7 @@ const Home = ({navigation}) => {
                                      tintColor: COLORS.darkgrayText
                                  }}
                              /> */}
-                             <Text style={{...FONTS.body4, color: COLORS.darkgrayText, marginRight: SIZES.base}}>Trình bới:</Text>
+                             <Text style={{...FONTS.body4, color: COLORS.darkgrayText, marginRight: SIZES.base}}>Trình bởi:</Text>
                              <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>{value.CREATED_BY.LAST_NAME} {value.CREATED_BY.NAME}</Text>
                             </View>
                             <View style={{flexDirection: 'row', marginTop: 2, alignItems: 'center'}}>
