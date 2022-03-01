@@ -7,7 +7,7 @@ import {
     StyleSheet
 } from "react-native";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const Tab = createMaterialTopTabNavigator();
 
 import Home from '../screens/Home';
@@ -15,14 +15,22 @@ import Notification from '../screens/Notification';
 import Profile from '../screens/Profile';
 import Setting from '../screens/Setting';
 import { COLORS, icons, FONTS, SIZES } from '../constants';
-
+import { GET_DATA } from '../screens/ultils/api';
 const TabTops = () => {
-    useEffect(() => {
-        async function fetUser() {
-            console.log(123);
-        }
-        fetUser();
-    }, []);
+ const [user, setUser] = useState({});
+ useEffect(() => {
+     let url = `/user-info.php`;
+     GET_DATA(`${url}`).then(res => {
+         if(res['success'] == 1){
+         console.log(res)
+             setUser(res['user'])
+         }
+      }).catch((error)=>{
+         console.log("Api call error");
+         alert(error.message);
+      });
+ }, [])
+
     return (
         <>
         <View
@@ -34,7 +42,7 @@ const TabTops = () => {
             >
                 <View style={{flex: 1}}>
                     <Text style={{...FONTS.h2}}>Xin chào!</Text>
-                    <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>Thỏa Nguyễn</Text>
+                    <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>{user.FULLNAME}</Text>
                 </View>
                 <View style={{
                     alignItems: 'center',
@@ -61,7 +69,20 @@ const TabTops = () => {
                     </TouchableOpacity>
                 </View>
             </View>
-            <Tab.Navigator>
+            <Tab.Navigator
+               screenOptions={({ route }) => ({
+                    tabBarActiveTintColor: "#f5610a",
+                    tabBarInactiveTintColor: "#555",
+                    tabBarLabelStyle: {
+                      fontSize: 12,
+                      textTransform: "none"
+                    },
+                    tabBarIndicatorStyle: {
+                      borderBottomColor: COLORS.primary,
+                      borderBottomWidth: 2,
+                    },
+                  })}
+              >
                 <Tab.Screen name="Tất cả" component={Home} />
                 <Tab.Screen name="Đã duyệt" component={Notification} />
                 <Tab.Screen name="Chờ duyệt" component={Profile} />

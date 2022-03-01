@@ -252,10 +252,6 @@ const Home = ({navigation}) => {
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: '#F4F5F7'}}>
             <View style={styles.container}>
-                <View style={{flex: 3}}>
-                    {renderHeader()}
-                    {renderButtonSection()}
-                </View>
                 <View style={{flex: 10}}>
                     {isLoadingData ? (
                         <>

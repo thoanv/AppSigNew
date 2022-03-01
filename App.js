@@ -15,7 +15,7 @@ import List from './screens/Signatures/List';
 import Detail from './screens/Signatures/Detail';
 import Signature from './screens/Signatures/Signature';
 import ViewFile from './screens/Signatures/ViewFile';
-
+import { Provider as PaperProvider } from 'react-native-paper';
 import { GET_LOGIN, POST_LOGIN } from './screens/ultils/api';
 const theme = {
   ...DefaultTheme,
@@ -120,26 +120,28 @@ export default function App({ navigation }) {
       return <Splash />;
     }
   return (
-  <AuthContext.Provider value={authContext}>
-    <NavigationContainer theme={theme}>
-          <Stack.Navigator>
-             {state.userToken == null ? (
-  //                <Stack.Screen name="Splash" component={Splash} options={{ headerShown: false}}/>
-                  <Stack.Screen name="SignIn" component={SignIn} options={{ headerShown: false}}/>
-             ) : (
-                <>
-                <Stack.Screen name="Tab" component={Tabs} options={{ headerShown: false}}/>
-                <Stack.Screen name="Notification" component={Notification} options={{ headerShown: false}}/>
-                <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false}}/>
-                <Stack.Screen name="Signature" component={Signature} options={{ headerShown: false}}/>
-                <Stack.Screen name="Detail" component={Detail} options={{ headerShown: false}}/>
-                <Stack.Screen name="List" component={List} options={{ headerShown: false}}/>
-                <Stack.Screen name="ViewFile" component={ViewFile} options={{ headerShown: false}}/>
-                </>
-             )}
-            </Stack.Navigator>
-        </NavigationContainer>
-    </AuthContext.Provider>
+    <PaperProvider>
+        <AuthContext.Provider value={authContext}>
+            <NavigationContainer theme={theme}>
+              <Stack.Navigator>
+                 {state.userToken == null ? (
+      //                <Stack.Screen name="Splash" component={Splash} options={{ headerShown: false}}/>
+                      <Stack.Screen name="SignIn" component={SignIn} options={{ headerShown: false}}/>
+                 ) : (
+                    <>
+                    <Stack.Screen name="Tab" component={Tabs} options={{ headerShown: false}}/>
+                    <Stack.Screen name="Notification" component={Notification} options={{ headerShown: false}}/>
+                    <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false}}/>
+                    <Stack.Screen name="Signature" component={Signature} options={{ headerShown: false}}/>
+                    <Stack.Screen name="Detail" component={Detail} options={{ headerShown: false}}/>
+                    <Stack.Screen name="List" component={List} options={{ headerShown: false}}/>
+                    <Stack.Screen name="ViewFile" component={ViewFile} options={{ headerShown: false}}/>
+                    </>
+                 )}
+                </Stack.Navigator>
+            </NavigationContainer>
+        </AuthContext.Provider>
+    </PaperProvider>
   );
 }
 
