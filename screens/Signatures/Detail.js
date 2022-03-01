@@ -23,7 +23,7 @@ import { POST_DATA } from '../ultils/api';
 import Modal from "react-native-modal";
 import RNFetchBlob from 'rn-fetch-blob';
 const width_screen  = Dimensions.get('window').width;
-
+import LinearGradient from 'react-native-linear-gradient';
 const Detail = ({ route, navigation }) => {
     const [data, setData] = useState([]);
     const [stages, setStages] = useState([]);
@@ -56,7 +56,7 @@ const Detail = ({ route, navigation }) => {
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
     };
-    const createAlert = (stage_id) => {
+    const createAlertAccept = (status) => {
         Alert.alert(
             "Thông báo",
             "Bạn muốn thực hiện thao tác này",
@@ -66,22 +66,22 @@ const Detail = ({ route, navigation }) => {
                 onPress: () => console.log("Cancel Pressed"),
                 style: "cancel"
               },
-              { text: "Đồng ý", onPress: () => actionChangeStage(stage_id)}
+              { text: "Đồng ý", onPress: () => actionChangeStage(status)}
             ]
           );
     }
-    const actionChangeStage = (stage_id) => {
-        console.log(stage_id);
+    const actionChangeStage = (status) => {
+        const stage_current = data.STAGE;
+        const stage_status = status;
         setModalVisible(!isModalVisible);
         setIsLoading(false)
         let id_rpa = route.params.ID_RPA;
         let id_task = route.params.ID_TASK;
-        let stage_id_current = data.STAGE.ID;
         let payload = {
             'rpa' : id_rpa,
             'task': id_task,
-            'stage_id_next' : stage_id,
-            'stage_id_current' : stage_id_current
+            'stage_current' : stage_current,
+            'stage_status' : stage_status
         };
         console.log(payload);
         let url = `/signature-detail.php`;
@@ -99,7 +99,7 @@ const Detail = ({ route, navigation }) => {
     }
     function renderHeader() {
         return (
-            <View style={{flex: 1, backgroundColor: COLORS.white, borderBottomColor: COLORS.darkgray, borderBottomWidth: 1}}>
+            <View style={{flex: 1, }}>
             
                 {/* Color Overlay */}
                 <View
@@ -135,11 +135,11 @@ const Detail = ({ route, navigation }) => {
                         />
                     </TouchableOpacity>
 
-                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                            <Text style={{...FONTS.h3,}}>Thông tin chi tiết</Text>
+                    <View style={{flex: 1, justifyContent: 'center'}}>
+                            <Text numberOfLines={1} style={{...FONTS.body3,}}>{data.NAME_TASK}</Text>
                     </View>
 
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                         style={{marginRight: SIZES.base}}
                         onPress={() => console.log("Click more")}
                     >
@@ -152,7 +152,7 @@ const Detail = ({ route, navigation }) => {
                                 alignSelf: 'flex-end'
                             }}
                         />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
 
                 
@@ -161,7 +161,7 @@ const Detail = ({ route, navigation }) => {
     }
     function renderTitle() {
         return (
-            <View style={{flexDirection: 'row', marginBottom: SIZES.base}}>
+            <View style={{flexDirection: 'row', marginBottom: SIZES.base*2}}>
                 {/* Custom Scrollbar */}
                 <View style={{flex: 1}}>
                     <View
@@ -170,6 +170,7 @@ const Detail = ({ route, navigation }) => {
                             paddingHorizontal: SIZES.base*2,
                             backgroundColor: COLORS.white,
                             paddingBottom: SIZES.padding,
+                            borderRadius: SIZES.base
                         }, styles.shadow]}
                     >
                         <Text style={{...FONTS.h2}}>{data.NAME_TASK}</Text>
@@ -179,51 +180,43 @@ const Detail = ({ route, navigation }) => {
         )
     }
     function renderStage() {
-    
         const renderItemStage = ({item, index}) => {
-            console.log(item);
                 return (
-                    <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'stretch'}}>
-                       
-                        <View style={{marginBottom: SIZES.base, marginRight: SIZES.base, backgroundColor: `#${item.COLOR}`, color: COLORS.white,  borderColor: `#${item.COLOR}`, borderWidth: 1, borderRadius: 10, paddingHorizontal: 5,}}>
-                            <Text style={{ ...FONTS.body5, color: COLORS.white }}>
-                                {item.NAME}
-                            </Text>
+                    <View style={{marginBottom: SIZES.base, marginLeft: SIZES.base, paddingBottom: SIZES.base}}>
+                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                            <View style={data.STAGE.SORT >= item.SORT ? styles.stage_process: styles.stage_future}>
+                                <Text style={data.STAGE.SORT >= item.SORT ? styles.txt_stage_process: styles.txt_stage_future}>{index+1}</Text>
+                            </View>
+                            <View style={{ marginLeft: SIZES.base}}>
+                                <Text style={{ ...FONTS.body4, color: COLORS.black }}>
+                                    {item.NAME}
+                                </Text>
+                            </View>
+                    
                         </View>
-                        {index < data.stageOfChanges.length-1 && (
-                            <Image 
-                            source={icons.right_arrow}
-                            style={{
-                                width: 10,
-                                height: 10,
-                                marginRight: SIZES.base,
-                                marginTop: 8
-                            }}
-                        />
-                        )}
                     </View>
+                    
                     
                 )
         }
         return (
-            <View style={{flex: 1, marginBottom: SIZES.base}}>
+            <View style={{flex: 1, marginBottom: SIZES.base*2, borderRadius: SIZES.base*2}}>
                 <View
                     style={[{
                         paddingVertical: 10,
                         paddingHorizontal: SIZES.base,
                         backgroundColor: COLORS.white,
-
+                        borderRadius: SIZES.base
                     }, styles.shadow]}
                 >
-                    <Text style={{...FONTS.body3, fontWeight: 'bold', textTransform: 'uppercase'}}>Giai đoạn</Text>
+                    <Text style={{...FONTS.body3, fontWeight: 'bold', textTransform: 'uppercase'}}>Tiến trình của các giai đoạn</Text>
                     <BorderHorizontal/>
                     <View style={{flexDirection: 'row', marginTop: SIZES.base}}>
                     <FlatList
-                            renderItem={renderItemStage}
-                            contentContainerStyle={{flexDirection : "row", flexWrap : "wrap",}}
-                            data={data.stageOfChanges}
-                            keyExtractor={(item, index) => 'key'+index}
-                        />
+                        renderItem={renderItemStage}
+                        data={stages}
+                        keyExtractor={(item, index) => 'key'+index}
+                    />
                     </View>
                 </View>
             </View>
@@ -235,7 +228,7 @@ const Detail = ({ route, navigation }) => {
         if(created_at) {
             let nameUser = `${created_at['LAST_NAME']} ${created_at['NAME']}`
             return (
-                <View style={{flexDirection: 'row', marginBottom: SIZES.base}}>
+                <View style={{flexDirection: 'row', marginBottom: SIZES.base*2}}>
                     {/* Custom Scrollbar */}
                     <View style={{flex: 1}}>
                         <View
@@ -243,11 +236,12 @@ const Detail = ({ route, navigation }) => {
                                 paddingTop: 10,
                                 paddingHorizontal: SIZES.base*2,
                                 backgroundColor: COLORS.white,
+                                borderRadius: SIZES.base
                             }, styles.shadow]}
                         >
                             <Text style={{...FONTS.body3, fontWeight: 'bold', textTransform: 'uppercase'}}>Thông tin công việc</Text>
                             <BorderHorizontal/>
-                            {itemTaskUser(icons.user, 'Người tạo', nameUser,  created_at.LOGIN, created_at.WORK_POSITION  )}
+                            {itemTaskUser(icons.user, 'Người tạo', nameUser  )}
                             {itemTask(icons.more, 'Phòng ban', created_at.WORK_DEPARTMENT)}
                             {itemTask(icons.clock, 'Thời gian tạo', data.CREATED_AT)}
                             {itemTask(icons.process, 'Quy trình', data.NAME_RPA)}
@@ -319,6 +313,17 @@ const Detail = ({ route, navigation }) => {
                             >
                                 <Text style={{color: COLORS.primary, fontWeight: 'bold'}}>Tải xuống</Text> 
                             </TouchableOpacity>
+                            <Dot/>
+                            <TouchableOpacity
+                                style={styles.button}
+                                onPress={()=> navigation.navigate("ViewFile", {
+                                    rpa: data.ID_RPA,
+                                    task: data.ID_TASK,
+                                    file_id: item.ID
+                                })}
+                            >
+                                <Text style={{color: COLORS.primary, fontWeight: 'bold'}}>Xem</Text> 
+                            </TouchableOpacity>
                         </View>
                     </View>
                     
@@ -326,7 +331,7 @@ const Detail = ({ route, navigation }) => {
             )
         }
         return (
-            <View style={{flexDirection: 'row', marginBottom: SIZES.base}}>
+            <View style={{flexDirection: 'row', marginBottom: SIZES.base*2}}>
                 {/* Custom Scrollbar */}
                 <View style={{flex: 1}}>
                     <View
@@ -334,9 +339,10 @@ const Detail = ({ route, navigation }) => {
                             paddingTop: 10,
                             paddingHorizontal: SIZES.base*2,
                             backgroundColor: COLORS.white,
+                            borderRadius: SIZES.base
                         }, styles.shadow]}
                     >
-                        <Text style={{...FONTS.body3, fontWeight: 'bold', textTransform: 'uppercase'}}>Tài liệu đính kèm ({data.TOTAL_FILE})</Text>
+                        <Text style={{...FONTS.body4, fontWeight: 'bold', textTransform: 'uppercase'}}>Tài liệu đính kèm ({data.TOTAL_FILE})</Text>
                         <BorderHorizontal/>
                   
                         <FlatList
@@ -401,7 +407,7 @@ const Detail = ({ route, navigation }) => {
            
         }
         return (
-            <View style={{flexDirection: 'row', marginBottom: SIZES.base}}>
+            <View style={{flexDirection: 'row', marginBottom: SIZES.base*2}}>
                 {/* Custom Scrollbar */}
                 <View style={{flex: 1}}>
                     <View
@@ -409,9 +415,10 @@ const Detail = ({ route, navigation }) => {
                             paddingTop: 10,
                             paddingHorizontal: SIZES.base*2,
                             backgroundColor: COLORS.white,
+                            borderRadius: SIZES.base
                         }, styles.shadow]}
                     >
-                        <Text style={{...FONTS.body3, fontWeight: 'bold', textTransform: 'uppercase'}}>Người xét duyệt</Text>
+                        <Text style={{...FONTS.body4, fontWeight: 'bold', textTransform: 'uppercase'}}>Người xét duyệt</Text>
                         <BorderHorizontal/>
                         <FlatList
                             showsHorizontalScrollIndicator={false}
@@ -425,7 +432,7 @@ const Detail = ({ route, navigation }) => {
             </View>
         )
     }
-    function itemTaskUser(icon, title, value, login, position= '') {
+    function itemTaskUser(icon, title, value, login='', position= '') {
         return (
             <View
                 style={{
@@ -449,8 +456,8 @@ const Detail = ({ route, navigation }) => {
                 <View>
                     <View style={{flexDirection: 'row'}}>
                         <Text style={{...FONTS.body4}}>{value} </Text>
-                        <Dot />
-                        <Text>@{login}</Text>
+                        {/* <Dot />
+                        <Text>@{login}</Text> */}
                     </View>
                     {position !== '' && (<Text>{position}</Text>)}
                 </View>
@@ -488,36 +495,25 @@ const Detail = ({ route, navigation }) => {
         if(!isLoadingData){
             if(data.STAGE && checkStageCurrents.includes(data.STAGE.ID)){
                 return (
-                    <View style={{height: 60, marginBottom: 0}}>
-                        <View style={{flex: 1, backgroundColor: COLORS.white, borderTopColor: COLORS.darkgray, borderTopWidth: 1}}>
+                    <View style={{height: 45, marginTop: SIZES.base}}>
+                        <View style={{flex: 1, marginBottom: SIZES.base}}>
                             {isLoading == true ? (
                                 <TouchableOpacity
-                                    style={{
-                                        flex: 1,
-                                        backgroundColor: COLORS.oragin,
-                                        marginHorizontal: SIZES.largeTitle,
-                                        marginVertical: SIZES.base,
-                                        borderRadius: SIZES.base,
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                    }}
+                                style={{
+                                    height: 40,
+                                    borderRadius: SIZES.base,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    
+                                }}
                                     onPress={toggleModal}
                                 >
                                 
-                                    <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                                        <Image
-                                            source={icons.up_down}
-                                            resizeMode="cover"
-                                            style= {{
-                                                width: 15,
-                                                height: 15,
-                                                tintColor: COLORS.white
-                                            }}
-                                        />
-            
-                                        <Text style={{color: COLORS.white, ...FONTS.body4, marginLeft: SIZES.base}}>Xác nhận</Text>
-                                    </View>
-                        
+                                <LinearGradient colors={[COLORS.primary, COLORS.primary, COLORS.primary]} style={{borderRadius: 20,}}>
+                                    <Text style={styles.buttonText,{paddingVertical: 10, paddingHorizontal: 60, color: COLORS.white, ...FONTS.body4}}>
+                                        Xác nhận
+                                    </Text>
+                                </LinearGradient>   
                                 </TouchableOpacity>
                             ) : (
                                 <View style={{
@@ -615,15 +611,15 @@ const Detail = ({ route, navigation }) => {
             <View style={{flex: 1}}>
                 {renderHeader()}
             </View>
-            <View style={{flex: 10}}>
+            <View style={{flex: 10, marginHorizontal: SIZES.base*3}}>
                 {isLoadingData ? (
                     <PlaceholderDetail/>
                 ):(
                     <ScrollView style={{flexGrow: 1}}
                     nestedScrollEnabled={true}>
-                        {renderTitle()}
-                        {renderStage()}
+                        {/* {renderTitle()} */}
                         {renderInfoTask()}
+                        {renderStage()}
                         {(data.TOTAL_FILE > 0) && (renderFileSignature())}
                         {renderUserSignature()}
                     </ScrollView>
@@ -664,23 +660,25 @@ const Detail = ({ route, navigation }) => {
                             data={stages}
                             keyExtractor={item => `s${item.ID}`}
                         />
-                        <TouchableOpacity style={styles.stage} onPress={() => createAlert()}>
-                        <View style={styles.itemStage}>
-                                <Text style={{...FONTS.body4, color: COLORS.red}}>Không duyệt</Text>
-                        </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.stage} onPress={() => createAlert()}>
+                        {(data.STAGE) && (data.STAGE.SORT > 1000) && (
+                            <TouchableOpacity style={styles.stage} onPress={() => createAlertAccept(2)}>
+                                <View style={styles.itemStage}>
+                                    <Text style={{...FONTS.body4, color: COLORS.red}}>Không duyệt</Text>
+                                </View>
+                            </TouchableOpacity>
+                        )}
+                        
+                        <TouchableOpacity style={styles.stage} onPress={() => createAlertAccept(1)}>
                             <View style={styles.itemStage}>
                                     <Text style={{color: COLORS.primary, ...FONTS.body4}}>Duyệt</Text>
                             </View>
                         </TouchableOpacity>
                         
-                                   
-                        <View style={styles.stageEnd}>
-                            <TouchableOpacity style={styles.itemStage}  onPress={toggleModal}>
-                                <Text style={{color: 'red', ...FONTS.body4}}>Đóng</Text>
-                            </TouchableOpacity>
-                        </View>
+                        <TouchableOpacity style={styles.stageEnd}  onPress={toggleModal}>
+                            <View style={styles.itemStage}>
+                                    <Text style={{color: 'red', ...FONTS.body4}}>Đóng</Text>
+                            </View>
+                        </TouchableOpacity>
                     </View>
                 </Modal>
             </View>
@@ -751,6 +749,32 @@ const styles = StyleSheet.create({
     },
     itemStage:{
         paddingVertical: 10
+    },
+    stage_process:{
+        backgroundColor: COLORS.primary, 
+        height: 30, 
+        width: 30, 
+        justifyContent:'center', 
+        alignItems: 'center', 
+        borderRadius: 30, 
+        borderColor: COLORS.oragin, 
+        borderWidth: 1
+    },
+    stage_future:{
+        backgroundColor: COLORS.white, 
+        height: 30, 
+        width: 30, 
+        justifyContent:'center', 
+        alignItems: 'center', 
+        borderRadius: 30, 
+        borderColor: COLORS.black, 
+        borderWidth: 1,
+    },
+    txt_stage_future:{
+        color: COLORS.black
+    },
+    txt_stage_process:{
+        color: COLORS.white
     }
 })
 

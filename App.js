@@ -14,6 +14,7 @@ import Profile from './screens/Profile';
 import List from './screens/Signatures/List';
 import Detail from './screens/Signatures/Detail';
 import Signature from './screens/Signatures/Signature';
+import ViewFile from './screens/Signatures/ViewFile';
 
 import { GET_LOGIN, POST_LOGIN } from './screens/ultils/api';
 const theme = {
@@ -128,12 +129,12 @@ export default function App({ navigation }) {
              ) : (
                 <>
                 <Stack.Screen name="Tab" component={Tabs} options={{ headerShown: false}}/>
-                <Stack.Screen name="Detail" component={Detail} options={{ headerShown: false}}/>
-                <Stack.Screen name="List" component={List} options={{ headerShown: false}}/>
-                <Stack.Screen name="BookDetail" component={BookDetail} options={{ headerShown: false}}/>
                 <Stack.Screen name="Notification" component={Notification} options={{ headerShown: false}}/>
                 <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false}}/>
                 <Stack.Screen name="Signature" component={Signature} options={{ headerShown: false}}/>
+                <Stack.Screen name="Detail" component={Detail} options={{ headerShown: false}}/>
+                <Stack.Screen name="List" component={List} options={{ headerShown: false}}/>
+                <Stack.Screen name="ViewFile" component={ViewFile} options={{ headerShown: false}}/>
                 </>
              )}
             </Stack.Navigator>

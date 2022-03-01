@@ -28,37 +28,40 @@ export default class Notification extends Component {
 
   render() {
     return (
-      <FlatList
-        style={styles.root}
-        data={this.state.data}
-        extraData={this.state}
-        ItemSeparatorComponent={() => {
-          return (
-            <View style={styles.separator}/>
-          )
-        }}
-        keyExtractor={(item)=>{
-          return item.id;
-        }}
-        renderItem={(item) => {
-          const Notification = item.item;
-          return(
-            <View style={styles.container}>
-              <TouchableOpacity onPress={() => {}}>
-                <Image style={styles.image} source={{uri: Notification.image}}/>
-              </TouchableOpacity>
-              <View style={styles.content}>
-                <View style={styles.contentHeader}>
-                  <Text  style={styles.name}>{Notification.name}</Text>
-                  <Text style={styles.time}>
-                    9:58 am
-                  </Text>
-                </View>
-                <Text rkType='primary3 mediumLine'>{Notification.comment}</Text>
-              </View>
-            </View>
-          );
-        }}/>
+      <View>
+        <Text>Đang xây dựng</Text>
+      </View>
+      // <FlatList
+      //   style={styles.root}
+      //   data={this.state.data}
+      //   extraData={this.state}
+      //   ItemSeparatorComponent={() => {
+      //     return (
+      //       <View style={styles.separator}/>
+      //     )
+      //   }}
+      //   keyExtractor={(item)=>{
+      //     return item.id;
+      //   }}
+      //   renderItem={(item) => {
+      //     const Notification = item.item;
+      //     return(
+      //       <View style={styles.container}>
+      //         <TouchableOpacity onPress={() => {}}>
+      //           <Image style={styles.image} source={{uri: Notification.image}}/>
+      //         </TouchableOpacity>
+      //         <View style={styles.content}>
+      //           <View style={styles.contentHeader}>
+      //             <Text  style={styles.name}>{Notification.name}</Text>
+      //             <Text style={styles.time}>
+      //               9:58 am
+      //             </Text>
+      //           </View>
+      //           <Text rkType='primary3 mediumLine'>{Notification.comment}</Text>
+      //         </View>
+      //       </View>
+      //     );
+      //   }}/>
     );
   }
 }

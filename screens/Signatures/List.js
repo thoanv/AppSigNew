@@ -45,7 +45,7 @@ const List = ({ route, navigation }) => {
    
     function renderHeader() {
         return (
-            <View style={{flex: 1, backgroundColor: COLORS.white, borderBottomColor: COLORS.darkgrayText, borderBottomWidth: 1}}>
+            <View style={{flex: 1}}>
 
                 {/* Color Overlay */}
                 <View
@@ -81,14 +81,10 @@ const List = ({ route, navigation }) => {
                         />
                     </TouchableOpacity>
 
-                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', width: width_screen}}>
-                            <Text numberOfLines={1} style={{...FONTS.h3,}}>{title}</Text>
+                    <View style={{flex: 1, justifyContent: 'center'}}>
+                            <Text numberOfLines={1} style={{...FONTS.body3}}>{title}</Text>
                     </View>
-
-                
                 </View>
-
-
             </View>
         )
     }
@@ -146,149 +142,150 @@ const List = ({ route, navigation }) => {
     }
     function renderBody() {
         return (
-            <FlatList
-                data={data}
-                ItemSeparatorComponent={() => {
-                  return (
-                    <View style={styles.separator}/>
-                  )
-                }}
-                keyExtractor={(item)=>{
-                  return 'a'+item.ID;
-                }}
-                refreshing={false}
-                onRefresh={() => _handleOnRefresh()}
-                onEndReachedThreshold={0.5}
-                onEndReached={() => 
-                    _onEndReachedLoad()
-                }
-                ListFooterComponent={() => (empty == true ? 
-                    <View style={{justifyContent:'center', alignItems: 'center'}}><Text style={styles.emptyMessageStyle}>Dữ liệu trống</Text></View> 
-                    : null)}
-                renderItem={({item}) => {
-                    let createBy = item.CREATED_BY;
-                    const bg = item.FILE_SIGNED == item.COUNT_FILE ? '#FFF' : '#d2e4f5';
-                    return(
-                        <View style={{paddingVertical: SIZES.base, paddingHorizontal: SIZES.base, backgroundColor: bg}}>
-                            <TouchableOpacity
-                                onPress={()=> navigation.navigate("Detail",{
-                                    ID_RPA: route.params.ID_RPA,
-                                    ID_TASK: item.ID
-                                })
-                            }>
-                            <View style={{flexDirection: 'row', }} >
-                                <Image
-                                    source={icons.pdf}
-                                    resizeMode="contain"
-                                    style={styles.image}
-                                />
-                                <View style={styles.content}>
-                                    <View style={styles.contentHeader}>
-                                        <Text  style={styles.name}>{item.NAME}</Text>
-                                    </View>
-                                    <View style={{marginTop: SIZES.base}}>
-                                        <View style={{flexDirection: 'row'}}>
-                                            {createBy && (
-                                                <>
-                                                <View style={{flexDirection: 'row', marginRight: SIZES.base*2,  alignItems: 'center',}}>
-                                                    <Text style={{...FONTS.body4, color: COLORS.darkgrayText, marginRight: SIZES.base}}>Người trình: </Text>
-                                                    <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>{createBy.FULLNAME}</Text>
+                <FlatList
+                    data={data}
+                    ItemSeparatorComponent={() => {
+                    return (
+                        <View style={styles.separator}/>
+                    )
+                    }}
+                    keyExtractor={(item)=>{
+                    return 'a'+item.ID;
+                    }}
+                    refreshing={false}
+                    onRefresh={() => _handleOnRefresh()}
+                    onEndReachedThreshold={0.5}
+                    onEndReached={() => 
+                        _onEndReachedLoad()
+                    }
+                    ListFooterComponent={() => (empty == true ? 
+                        <View style={{justifyContent:'center', alignItems: 'center'}}><Text style={styles.emptyMessageStyle}>Dữ liệu trống</Text></View> 
+                        : null)}
+                    renderItem={({item}) => {
+                        let createBy = item.CREATED_BY;
+                        const bg = item.FILE_SIGNED == item.COUNT_FILE ? '#FFF' : '#d2e4f5';
+                        return(
+                            <View style={[styles.boxItem, styles.shadow, {backgroundColor: bg,}]}>
+                                <TouchableOpacity
+                                    onPress={()=> navigation.navigate("Detail",{
+                                        ID_RPA: route.params.ID_RPA,
+                                        ID_TASK: item.ID
+                                    })
+                                }>
+                                <View style={{flexDirection: 'row', }} >
+                                    <Image
+                                        source={icons.pdf}
+                                        resizeMode="contain"
+                                        style={styles.image}
+                                    />
+                                    <View style={styles.content}>
+                                        <View style={styles.contentHeader}>
+                                            <Text  style={styles.name}>{item.NAME}</Text>
+                                        </View>
+                                        <View style={{marginTop: SIZES.base}}>
+                                            <View style={{flexDirection: 'row'}}>
+                                                {createBy && (
+                                                    <>
+                                                    <View style={{flexDirection: 'row', marginRight: SIZES.base*2,  alignItems: 'center',}}>
+                                                        <Text style={{...FONTS.body4, color: COLORS.darkgrayText, marginRight: SIZES.base}}>Người trình: </Text>
+                                                        <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>{createBy.FULLNAME}</Text>
+                                                    </View>
+                                                    </>
+                                                )}
+                                            </View>
+                                            <View style={{flexDirection: 'row', marginTop: 3}}>
+                                                <View style={{flexDirection: 'row', marginRight: SIZES.base*2 , alignItems: 'center',}}>
+                                                    <Text style={{...FONTS.body4, color: COLORS.darkgrayText, marginRight: SIZES.base}}>Ngày trình: </Text>
+                                                    <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>{item.CREATED_TIME}</Text>
                                                 </View>
-                                                </>
+                                                
+                                            </View>
+                                            {item.checkCreatedByAndUserSig == true && (
+                                            <View style={{flexDirection: 'row', marginTop: 3}}>
+                                                <View style={{flexDirection: 'row', marginRight: SIZES.base*2 , alignItems: 'center',}}>
+                                                    <Text style={{...FONTS.body4, color: COLORS.darkgrayText, marginRight: SIZES.base}}>Số File: </Text>
+                                                    <Text style={{...FONTS.body4, color: COLORS.darkgrayText, fontWeight: 'bold'}}>{item.FILE_SIGNED}/{item.COUNT_FILE}</Text>
+                                                </View>
+                                            </View>
+                                            )}
+                                            {item.STAGE && (
+                                                <View style={{flexDirection: 'row', marginTop: 3}}>
+                                                    <View style={{flexDirection: 'row', marginRight: SIZES.base*2, alignItems: 'center',}}>
+                                                        <Text style={{...FONTS.body4, color: COLORS.darkgrayText, marginRight: SIZES.base}}>Giai đoạn: </Text>
+                                                        <Text style={{...FONTS.body5, color: COLORS.darkgrayText, color: COLORS.white,paddingHorizontal: SIZES.base, borderRadius: 20, backgroundColor: `#${item.STAGE.COLOR}`}}>{item.STAGE.NAME}</Text>
+                                                    </View>
+                                                    
+                                                    
+                                                </View>
                                             )}
                                         </View>
-                                        <View style={{flexDirection: 'row', marginTop: 3}}>
-                                            <View style={{flexDirection: 'row', marginRight: SIZES.base*2 , alignItems: 'center',}}>
-                                                <Text style={{...FONTS.body4, color: COLORS.darkgrayText, marginRight: SIZES.base}}>Ngày trình: </Text>
-                                                <Text style={{...FONTS.body4, color: COLORS.darkgrayText}}>{item.CREATED_TIME}</Text>
-                                            </View>
+                                        <View style={{marginTop: SIZES.base}}>
+                                            <View style={{flexDirection: 'row'}}>
+                                            <FlatList
+                                                horizontal
+                                                showsHorizontalScrollIndicator={false}
+                                                renderItem={(itemUser) => {
+                                                    const ite = itemUser.item
+                                                    if(ite.INFORMATION){
+                                                        const user = ite.INFORMATION;
+                                                        return (
+                                                            <View style={{marginRight: SIZES.base*2}}>
+                                                                {user.PATH ? (
+                                                                    <Image 
+                                                                        source={{uri: user.PATH}}
+                                                                        style={{
+                                                                            width: 35,
+                                                                            height: 35,
+                                                                            borderRadius: 35,
+                                                                            borderWidth: 1,
+                                                                            borderColor: COLORS.darkgray
+                                                                        }}
+                                                                    />
+                                                                ):(
+                                                                    <Image 
+                                                                        source={icons.user}
+                                                                        style={{
+                                                                            width: 35,
+                                                                            height: 35,
+                                                                            borderRadius: 35,
+                                                                            borderWidth: 1,
+                                                                            borderColor: COLORS.darkgray
+                                                                        }}
+                                                                    />
+                                                                )}
+                                                                {ite.FILE_SIGNATURE == item.COUNT_FILE && (
+                                                                    <Image 
+                                                                        source={icons.check_green}
+                                                                        style={{
+                                                                            width: 15,
+                                                                            height: 15,
+                                                                            position:'absolute',
+                                                                            right: -5,
+                                                                            top: 0
+                                                                        }}
+                                                                    />
+                                                                )}
+                                                                
+                                                            </View>
+                                                        )
+                                                    }
+                                                    
+                                                }}
+                                                data={item.USERS}
+                                                keyExtractor={(itemUser, index) => `u${item.ID} ${index}`}
+                                            />
                                             
-                                        </View>
-                                        {item.checkCreatedByAndUserSig == true && (
-                                        <View style={{flexDirection: 'row', marginTop: 3}}>
-                                            <View style={{flexDirection: 'row', marginRight: SIZES.base*2 , alignItems: 'center',}}>
-                                                <Text style={{...FONTS.body4, color: COLORS.darkgrayText, marginRight: SIZES.base}}>Số File: </Text>
-                                                <Text style={{...FONTS.body4, color: COLORS.darkgrayText, fontWeight: 'bold'}}>{item.FILE_SIGNED}/{item.COUNT_FILE}</Text>
                                             </View>
                                         </View>
-                                        )}
-                                        {item.STAGE && (
-                                            <View style={{flexDirection: 'row', marginTop: 3}}>
-                                                <View style={{flexDirection: 'row', marginRight: SIZES.base*2, alignItems: 'center',}}>
-                                                    <Text style={{...FONTS.body4, color: COLORS.darkgrayText, marginRight: SIZES.base}}>Giai đoạn: </Text>
-                                                    <Text style={{...FONTS.body5, color: COLORS.darkgrayText, color: COLORS.white,paddingHorizontal: SIZES.base, borderRadius: 20, backgroundColor: `#${item.STAGE.COLOR}`}}>{item.STAGE.NAME}</Text>
-                                                </View>
-                                                
-                                                
-                                            </View>
-                                        )}
                                     </View>
-                                    <View style={{marginTop: SIZES.base}}>
-                                        <View style={{flexDirection: 'row'}}>
-                                        <FlatList
-                                            horizontal
-                                            showsHorizontalScrollIndicator={false}
-                                            renderItem={(itemUser) => {
-                                                const ite = itemUser.item
-                                                if(ite.INFORMATION){
-                                                    const user = ite.INFORMATION;
-                                                    return (
-                                                        <View style={{marginRight: SIZES.base*2}}>
-                                                            {user.PATH ? (
-                                                                <Image 
-                                                                    source={{uri: user.PATH}}
-                                                                    style={{
-                                                                        width: 35,
-                                                                        height: 35,
-                                                                        borderRadius: 35,
-                                                                        borderWidth: 1,
-                                                                        borderColor: COLORS.darkgray
-                                                                    }}
-                                                                />
-                                                            ):(
-                                                                <Image 
-                                                                    source={icons.user}
-                                                                    style={{
-                                                                        width: 35,
-                                                                        height: 35,
-                                                                        borderRadius: 35,
-                                                                        borderWidth: 1,
-                                                                        borderColor: COLORS.darkgray
-                                                                    }}
-                                                                />
-                                                            )}
-                                                            {ite.FILE_SIGNATURE == item.COUNT_FILE && (
-                                                                <Image 
-                                                                    source={icons.check_green}
-                                                                    style={{
-                                                                        width: 15,
-                                                                        height: 15,
-                                                                        position:'absolute',
-                                                                        right: -5,
-                                                                        top: 0
-                                                                    }}
-                                                                />
-                                                            )}
-                                                            
-                                                        </View>
-                                                    )
-                                                }
-                                                
-                                            }}
-                                            data={item.USERS}
-                                            keyExtractor={(itemUser, index) => `u${item.ID} ${index}`}
-                                        />
-                                        
-                                        </View>
                                     </View>
-                                </View>
-                                </View>
-                            </TouchableOpacity>
-                            
-                        </View>
-                    );
-                }
-            }/>
+                                </TouchableOpacity>
+                                
+                            </View>
+                        );
+                    }
+                }/>
+           
            
         );
     }
@@ -328,9 +325,25 @@ const List = ({ route, navigation }) => {
 const styles = StyleSheet.create({
     container:{
         flex: 1,
-        backgroundColor: COLORS.white,
     },
+    boxItem:{
+        paddingVertical: SIZES.base, 
+        paddingHorizontal: SIZES.base, 
+        marginHorizontal: SIZES.base*3, 
+        marginBottom: SIZES.base*2, 
+        borderRadius: 10
+    },
+    shadow: {
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 10,
+        },
+        shadowOpacity: 0.30,
+        shadowRadius: 2,
 
+        elevation: 2,
+    },
     content: {
         marginLeft: 16,
         flex: 1,
@@ -341,7 +354,7 @@ const styles = StyleSheet.create({
         marginBottom: 6
     },
     separator: {
-        height: 1,
+        // height: 1,
         backgroundColor: "#CCCCCC"
     },
     image:{

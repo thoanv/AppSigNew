@@ -54,7 +54,7 @@ const Signature = ({ route, navigation }) => {
 
     function renderHeader() {
         return (
-            <View style={{flex: 1, backgroundColor: COLORS.white, borderBottomColor: COLORS.darkgray, borderBottomWidth: 1}}>
+            <View style={{flex: 1}}>
             
                 {/* Color Overlay */}
                 <View
@@ -90,11 +90,11 @@ const Signature = ({ route, navigation }) => {
                         />
                     </TouchableOpacity>
 
-                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                            <Text style={{...FONTS.h3,}}>Văn bản</Text>
+                    <View style={{flex: 1, justifyContent: 'center'}}>
+                            <Text style={{...FONTS.body3}}>Văn bản</Text>
                     </View>
 
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                         style={{marginRight: SIZES.base}}
                         onPress={() => console.log("Click more")}
                     >
@@ -107,7 +107,7 @@ const Signature = ({ route, navigation }) => {
                                 alignSelf: 'flex-end'
                             }}
                         />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
 
                 
@@ -175,7 +175,7 @@ const Signature = ({ route, navigation }) => {
                             </View>
                         )}
                         {note !== '' && (
-                            <View style={{width: '100%',flexDirection: 'row',backgroundColor: COLORS.primary,paddingHorizontal: 15, paddingVertical: 5, position: 'absolute', top: 10}}>
+                            <View style={{width: '100%',flexDirection: 'row',backgroundColor: COLORS.lime, paddingHorizontal: 15, paddingVertical: 5, position: 'absolute', top: 10}}>
                                 <Text style={{color: COLORS.white}}>{note}</Text>
                             </View>
                         )}
@@ -200,6 +200,7 @@ const Signature = ({ route, navigation }) => {
         console.log(payload);
         POST_DATA(`${url}`, payload).then(res => {
             if(res['success'] == 1){
+                console.log(res)
                 if(res.access_token_vnpt)
                     setAccessTokenVnpt(res.access_token_vnpt);
                 if(res.tranId)
@@ -232,7 +233,13 @@ const Signature = ({ route, navigation }) => {
                 setLocalSignature({});
                 setSignature('')
                 setFile(res['file'])
-                navigation.goBack();
+            }else if(res['success'] == 3){
+                if(res.access_token_vnpt)
+                    setAccessTokenVnpt(res.access_token_vnpt);
+                if(res.tranId)
+                    setTranId(res.tranId)
+
+                setNote(res.note);
             }
             setIsLoading(true);
          }).catch((error)=>{
@@ -256,18 +263,17 @@ const Signature = ({ route, navigation }) => {
     }
     function renderFooter () {
         return (
-            <View style={{flex: 1, flexDirection: 'row', backgroundColor: COLORS.white, borderTopColor: COLORS.darkgray, borderTopWidth: 1}}>
+            <View style={{flex: 1, flexDirection: 'row', backgroundColor: COLORS.white}}>
                 {tranId == '' ? (
                     <>
-                            
                     {isLoading == true ? (
                         <TouchableOpacity
                             style={{
                                 flex: 1,
                                 backgroundColor: COLORS.oragin,
-                                marginHorizontal: SIZES.largeTitle,
+                                marginHorizontal: SIZES.largeTitle*2,
                                 marginVertical: SIZES.base,
-                                borderRadius: SIZES.base,
+                                borderRadius: SIZES.base*3,
                                 alignItems: 'center',
                                 justifyContent: 'center',
                             }}
@@ -291,9 +297,9 @@ const Signature = ({ route, navigation }) => {
                         <View style={{
                             flex: 1,
                             backgroundColor: COLORS.oragin,
-                            marginHorizontal: SIZES.largeTitle,
+                            marginHorizontal: SIZES.largeTitle*2,
                             marginVertical: SIZES.base,
-                            borderRadius: SIZES.base,
+                            borderRadius: SIZES.base*3,
                             alignItems: 'center',
                             justifyContent: 'center',
                         }}>
@@ -307,10 +313,10 @@ const Signature = ({ route, navigation }) => {
                         <TouchableOpacity
                             style={{
                                 flex: 1,
-                                backgroundColor: COLORS.primary,
-                                marginHorizontal: SIZES.largeTitle,
+                                backgroundColor: COLORS.lime,
+                                marginHorizontal: SIZES.largeTitle*2,
                                 marginVertical: SIZES.base,
-                                borderRadius: SIZES.base,
+                                borderRadius: SIZES.base*3,
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 paddingHorizontal: SIZES.padding
@@ -334,10 +340,10 @@ const Signature = ({ route, navigation }) => {
                     ) : (
                         <View style={{
                             flex: 1,
-                            backgroundColor: COLORS.primary,
-                            marginHorizontal: SIZES.base,
+                            backgroundColor: COLORS.lime,
+                            marginHorizontal: SIZES.largeTitle*2,
                             marginVertical: SIZES.base,
-                            borderRadius: SIZES.base,
+                            borderRadius: SIZES.base*3,
                             alignItems: 'center',
                             justifyContent: 'center',
                         }}>
@@ -379,7 +385,6 @@ const Signature = ({ route, navigation }) => {
 const styles = StyleSheet.create({
     container:{
         flex: 1,
-        backgroundColor: COLORS.black
     },
     pdf: {
         flex:1,

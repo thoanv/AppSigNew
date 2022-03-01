@@ -24,7 +24,7 @@ const Gradient = () => {
 };
 const PlaceholderList= () => {
     return (
-        <View>
+        <View style={{marginHorizontal: SIZES.base*3, marginBottom: SIZES.base*2, borderRadius: 10}}>
             <PlaceholderContainer
                     style={styles.placeholderContainer}
                     animatedComponent={<Gradient />}
@@ -39,19 +39,15 @@ const PlaceholderList= () => {
                                 width: '100%',
                             }}
                         >
-                          <Placeholder style={[styles.placeholder,{width: '70%',height: 15} ]} />
+                          <Placeholder style={[styles.placeholder,{width: '70%',height: 15, borderRadius: 5} ]} />
                           <View style={{marginTop: SIZES.base}}>
-                            <View style={{flexDirection: 'row'}}>
-                              <Placeholder style={[styles.placeholder,{width: '30%',height: 10} ]} />
-                              <Placeholder style={[styles.placeholder,{width: '30%',height: 10} ]} />
-                            </View>
-                            <View style={{flexDirection: 'row'}}>
-                              <Placeholder style={[styles.placeholder,{width: '30%',height: 10} ]} />
-                              <Placeholder style={[styles.placeholder,{width: '30%',height: 10} ]} />
-                            </View>
-                            <View style={{flexDirection: 'row'}}>
-                              <Placeholder style={[styles.placeholder,{width: '30%',height: 10} ]} />
-                            </View>
+                            
+                              <Placeholder style={[styles.placeholder,{width: '50%',height: 10, borderRadius: 5} ]} />
+                              <Placeholder style={[styles.placeholder,{width: '30%',height: 10, borderRadius: 5} ]} />
+                            
+                              <Placeholder style={[styles.placeholder,{width: '40%',height: 10, borderRadius: 5} ]} />
+                              <Placeholder style={[styles.placeholder,{width: '60%',height: 10, borderRadius: 5} ]} />
+                          
                             <View style={{flexDirection: 'row', marginTop: SIZES.base}}>
                               <Placeholder style={[styles.placeholder,{width: 30,height: 30, borderRadius: 30} ]} />
                               <Placeholder style={[styles.placeholder,{width: 30,height: 30, borderRadius: 30} ]} />
@@ -73,6 +69,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         // height: 200,
         marginTop: 10,
+        borderRadius: 10,
       },
       placeholder: {
         height: 8,

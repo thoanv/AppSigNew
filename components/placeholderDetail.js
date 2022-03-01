@@ -24,14 +24,14 @@ const Gradient = () => {
 };
 const PlaceholderDetail= () => {
     return (
-        <View>
+        <View style={{marginHorizontal: SIZES.base*2}}>
             <PlaceholderContainer
                     style={styles.placeholderContainer}
                     animatedComponent={<Gradient />}
                     duration={1000}
                     delay={1000}
                 >
-                    <View style={{backgroundColor: '#FFF', flexDirection: 'row', borderBottomColor: COLORS.border, borderBottomWidth: 1, paddingBottom: SIZES.base}}>
+                    <View style={{backgroundColor: '#FFF', flexDirection: 'row', borderBottomColor: COLORS.border, borderBottomWidth: 1, paddingBottom: SIZES.base, borderRadius: 10, marginBottom: SIZES.base*2}}>
                         <View
                             style={{
                                 flexDirection: 'column',
@@ -60,7 +60,7 @@ const PlaceholderDetail= () => {
                         </View>
                         </View>
                     </View>
-                    <View style={{backgroundColor: '#FFF', flexDirection: 'row', borderBottomColor: COLORS.border, borderBottomWidth: 1, paddingBottom: SIZES.base, marginTop: SIZES.base}}>
+                    <View style={{ borderRadius: 10, marginBottom: SIZES.base*2,backgroundColor: '#FFF', flexDirection: 'row', borderBottomColor: COLORS.border, borderBottomWidth: 1, paddingBottom: SIZES.base, marginTop: SIZES.base}}>
                         <View
                             style={{
                                 flexDirection: 'column',
@@ -86,7 +86,7 @@ const PlaceholderDetail= () => {
                           </View>
                         </View>
                     </View>
-                    <View style={{backgroundColor: '#FFF', flexDirection: 'row', borderBottomColor: COLORS.border, borderBottomWidth: 1, paddingBottom: SIZES.base, marginTop: SIZES.base}}>
+                    <View style={{borderRadius: 10, marginBottom: SIZES.base*2,backgroundColor: '#FFF', flexDirection: 'row', borderBottomColor: COLORS.border, borderBottomWidth: 1, paddingBottom: SIZES.base, marginTop: SIZES.base}}>
                         <View
                             style={{
                                 flexDirection: 'column',
@@ -150,7 +150,7 @@ const PlaceholderDetail= () => {
                           </View>
                         </View>
                     </View>
-                    <View style={{backgroundColor: '#FFF', flexDirection: 'row', borderBottomColor: COLORS.border, borderBottomWidth: 1, paddingBottom: SIZES.base, marginTop: SIZES.base}}>
+                    <View style={{borderRadius: 10, marginBottom: SIZES.base*2,backgroundColor: '#FFF', flexDirection: 'row', borderBottomColor: COLORS.border, borderBottomWidth: 1, paddingBottom: SIZES.base, marginTop: SIZES.base}}>
                         <View
                             style={{
                                 flexDirection: 'column',
@@ -234,6 +234,7 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
         justifyContent: 'center',
         backgroundColor: '#eeeeee',
+        borderRadius: 10
       },
       placeholderHeader:{
         height: 8,
