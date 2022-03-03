@@ -5,7 +5,6 @@ import {
     StyleSheet,
     TouchableOpacity,
     Image,
-    ScrollView,
     Dimensions,
     SafeAreaView,
     FlatList,
@@ -24,6 +23,7 @@ import Modal from "react-native-modal";
 import RNFetchBlob from 'rn-fetch-blob';
 const width_screen  = Dimensions.get('window').width;
 import LinearGradient from 'react-native-linear-gradient';
+import { ScrollView } from 'react-native-gesture-handler';
 const Detail = ({ route, navigation }) => {
     const [data, setData] = useState([]);
     const [stages, setStages] = useState([]);
@@ -611,7 +611,7 @@ const Detail = ({ route, navigation }) => {
             <View style={{flex: 1}}>
                 {renderHeader()}
             </View>
-            <View style={{flex: 10, marginHorizontal: SIZES.base*3}}>
+            <View style={{flex: 10, marginHorizontal: SIZES.base}}>
                 {isLoadingData ? (
                     <PlaceholderDetail/>
                 ):(

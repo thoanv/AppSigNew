@@ -5,33 +5,36 @@ import {
     FlatList,
     StyleSheet
 } from 'react-native';
-import { icons, COLORS, images, SIZES, FONTS } from '../constants'
-import { GET_DATA } from './ultils/api';
-import PlaceholderItem from '../components/placeholderItem'
+import { icons, COLORS, images, SIZES, FONTS } from '../../constants'
+import { GET_DATA } from '../ultils/api';
+import PlaceholderItem from '../../components/placeholderItem';
 
-import ItemSign from '../components/itemSign';
+import ItemSign from '../../components/itemSign';
 
-const Home = ({navigation}) => {
+const PendingSign = ({navigation}) => {
 
     const [dataSignatures, setDataSignatures] = useState([])
     const [isLoadingData, setIsLoadingData] = useState(false)
     useEffect(() => {
-        async function fetchList() {
-            setIsLoadingData(true)
-            let url = '/signature-lists.php';
-            GET_DATA(`${url}`).then(response => {
-                console.log(response)
-                if(response['success'] == 1){
-                    setDataSignatures(response['data']);
-                    setIsLoadingData(false)
-                }
-             }).catch((error)=>{
-                console.log("Api call error");
-                alert(error.message);
-             });
-        }
-        fetchList();
-    }, []);
+        const unsubscribe = navigation.addListener('focus', () => {
+            async function fetchList() {
+                setIsLoadingData(true)
+                let url = '/signature-lists.php';
+                GET_DATA(`${url}`).then(response => {
+                    if(response['success'] == 1){
+                        setDataSignatures(response['data']);
+                        setIsLoadingData(false)
+                    }
+                 }).catch((error)=>{
+                    console.log("Api call error");
+                    alert(error.message);
+                 });
+            }
+            fetchList();
+          });
+          return unsubscribe;
+        
+    }, [navigation]);
 
     function renderDataSection () {
 
@@ -98,4 +101,4 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
 })
-export default Home;
+export default PendingSign;

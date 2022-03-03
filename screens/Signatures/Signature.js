@@ -233,6 +233,7 @@ const Signature = ({ route, navigation }) => {
                 setLocalSignature({});
                 setSignature('')
                 setFile(res['file'])
+                setNote(res.note);
             }else if(res['success'] == 3){
                 if(res.access_token_vnpt)
                     setAccessTokenVnpt(res.access_token_vnpt);
