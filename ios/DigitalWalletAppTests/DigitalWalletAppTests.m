@@ -7,11 +7,11 @@
 #define TIMEOUT_SECONDS 600
 #define TEXT_TO_LOOK_FOR @"Welcome to React"
 
-@interface DigitalWalletAppTests : XCTestCase
+@interface hplsignatureTests : XCTestCase
 
 @end
 
-@implementation DigitalWalletAppTests
+@implementation hplsignatureTests
 
 - (BOOL)findSubviewInView:(UIView *)view matching:(BOOL(^)(UIView *view))test
 {
