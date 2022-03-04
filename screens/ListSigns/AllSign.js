@@ -13,7 +13,7 @@ import PlaceholderItem from '../../components/placeholderItem';
 import ItemSign from '../../components/itemSign';
 
 const AllSign = ({navigation}) => {
-
+    const [isFetching, setIsFetching] = useState(false);
     const [dataSignatures, setDataSignatures] = useState([])
     const [isLoadingData, setIsLoadingData] = useState(false)
     const [isLoading, setIsLoading] = useState(false);
@@ -40,7 +40,26 @@ const AllSign = ({navigation}) => {
         }
         fetchList();
     }, []);
-
+    const fetchData =  () =>  {
+        let pa = 0;
+        let payload = {
+            'type' : 'all',
+            'page': pa,
+        };
+        let url = '/signature-lists.php';
+        POST_DATA(`${url}`, payload).then(res => {
+            setPage(pa)
+            if(res['success'] == 1){
+                setDataSignatures(res['data']);
+            }
+             setPage(pa+1);
+            setIsFetching(false);
+            setIsLoadingData(false)
+         }).catch((error)=>{
+            console.log("Api call error");
+            alert(error.message);
+        });
+    }
     function renderDataSection () {
 
         const renderItem = ({item, index}) => {
@@ -51,7 +70,7 @@ const AllSign = ({navigation}) => {
         return (
             <View style={{ marginTop: SIZES.padding}}>
                 <FlatList
-                    refreshing={false}
+                    refreshing={isFetching}
                     onRefresh={() => _handleOnRefresh()}
                     onEndReachedThreshold={0.5}
                     onEndReached={() => 
@@ -69,26 +88,12 @@ const AllSign = ({navigation}) => {
         )
     }
     const _handleOnRefresh = () => {
-        const page_ = 0;
+        setIsFetching(true);
+        setPage(0);
         setIsLoading(false)
         setIsLoadingData(true);
         setDataSignatures([])
-        let payload = {
-            'type' : 'all',
-            'page': page_,
-        };
-        let url = '/signature-lists.php';
-        POST_DATA(`${url}`, payload).then(res => {
-            setPage(page_);
-            if(res['success'] == 1){
-                setDataSignatures(res['data']);
-                setPage(page+1);
-            }
-            setIsLoadingData(false)
-         }).catch((error)=>{
-            console.log("Api call error");
-            alert(error.message);
-        });
+        fetchData();
     }
     const _onEndReachedLoad = () => {
         setIsLoading(true)

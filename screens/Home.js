@@ -20,7 +20,6 @@ const Home = ({navigation}) => {
             setIsLoadingData(true)
             let url = '/signature-lists.php';
             GET_DATA(`${url}`).then(response => {
-                console.log(response)
                 if(response['success'] == 1){
                     setDataSignatures(response['data']);
                     setIsLoadingData(false)

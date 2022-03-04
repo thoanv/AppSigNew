@@ -9,12 +9,10 @@ import {
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Avatar } from 'react-native-paper';
 const Tab = createMaterialTopTabNavigator();
-import Home from '../screens/Home';
 import AllSign from '../screens/ListSigns/AllSign';
 import PendingSign from '../screens/ListSigns/PendingSign';
-import Notification from '../screens/Notification';
-import Profile from '../screens/Profile';
-import Setting from '../screens/Setting';
+import ApprovedSign from '../screens/ListSigns/ApprovedSign';
+import DoNotSign from '../screens/ListSigns/DoNotSign';
 import { COLORS, icons, FONTS, SIZES } from '../constants';
 import { GET_DATA } from '../screens/ultils/api';
 import {
@@ -142,8 +140,8 @@ const TabTops = () => {
             >
             <Tab.Screen name="Tất cả" component={AllSign} />
             <Tab.Screen name="Chờ duyệt" component={PendingSign} />
-            <Tab.Screen name="Đã duyệt" component={Home} />
-            <Tab.Screen name="K.duyệt" component={Home} />
+            <Tab.Screen name="Đã duyệt" component={ApprovedSign} />
+            <Tab.Screen name="K.duyệt" component={DoNotSign} />
         </Tab.Navigator>
     </>
     )

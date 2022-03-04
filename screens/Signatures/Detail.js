@@ -159,21 +159,25 @@ const Detail = ({ route, navigation }) => {
             </View>
         )
     }
-    function renderTitle() {
+    function renderNote() {
         return (
-            <View style={{flexDirection: 'row', marginBottom: SIZES.base*2}}>
-                {/* Custom Scrollbar */}
-                <View style={{flex: 1}}>
-                    <View
-                        style={[{
-                            paddingTop: 10,
-                            paddingHorizontal: SIZES.base*2,
-                            backgroundColor: COLORS.white,
-                            paddingBottom: SIZES.padding,
-                            borderRadius: SIZES.base
-                        }, styles.shadow]}
-                    >
-                        <Text style={{...FONTS.h2}}>{data.NAME_TASK}</Text>
+            <View style={{flex: 1, marginBottom: SIZES.base*2, borderRadius: SIZES.base*2}}>
+                <View
+                    style={[{
+                        paddingVertical: 10,
+                        paddingHorizontal: SIZES.base,
+                        backgroundColor: COLORS.white,
+                        borderRadius: SIZES.base
+                    }, styles.shadow]}
+                >
+                    <Text style={{...FONTS.body4, fontWeight: 'bold', textTransform: 'uppercase'}}>Ghi chú</Text>
+                    <BorderHorizontal/>
+                    <View style={{flexDirection: 'row', marginTop: SIZES.base}}>
+                        <Text>
+                        Công ty TNHH Hệ thống Thông tin FPT tự hào là đơn vị triển khai hệ thống Xác thực hóa đơn cho Tổng Cục Thuế từ năm 2015 và các hệ thống lõi của Bộ Tài chính trong hơn 23 năm qua.
+
+Phần mềm hóa đơn điện tử FPT.eInvoice đươc ưa chuộng với tính năng ưu việt và giao diện dễ sử dụng, được phân tích và phát triển bởi đội ngũ kĩ thuật giàu kinh nghiệm. Bên cạnh đó, FPT.eInvoice có đội ngũ tư vấn tận tâm, chuyên nghiệp và nhiệt tình, luôn sẵn sàng 24/7 để hỗ trợ, phục vụ và đem đến những trải nghiệm tốt nhất cho khách hàng khi sử dụng của sản phẩm.
+                        </Text>
                     </View>
                 </View>
             </View>
@@ -195,8 +199,6 @@ const Detail = ({ route, navigation }) => {
                     
                         </View>
                     </View>
-                    
-                    
                 )
         }
         return (
@@ -209,7 +211,7 @@ const Detail = ({ route, navigation }) => {
                         borderRadius: SIZES.base
                     }, styles.shadow]}
                 >
-                    <Text style={{...FONTS.body3, fontWeight: 'bold', textTransform: 'uppercase'}}>Tiến trình của các giai đoạn</Text>
+                    <Text style={{...FONTS.body4, fontWeight: 'bold', textTransform: 'uppercase'}}>Tiến trình của các giai đoạn</Text>
                     <BorderHorizontal/>
                     <View style={{flexDirection: 'row', marginTop: SIZES.base}}>
                     <FlatList
@@ -239,7 +241,7 @@ const Detail = ({ route, navigation }) => {
                                 borderRadius: SIZES.base
                             }, styles.shadow]}
                         >
-                            <Text style={{...FONTS.body3, fontWeight: 'bold', textTransform: 'uppercase'}}>Thông tin công việc</Text>
+                            <Text style={{...FONTS.body4, fontWeight: 'bold', textTransform: 'uppercase'}}>Thông tin công việc</Text>
                             <BorderHorizontal/>
                             {itemTaskUser(icons.user, 'Người tạo', nameUser  )}
                             {itemTask(icons.more, 'Phòng ban', created_at.WORK_DEPARTMENT)}
@@ -619,6 +621,7 @@ const Detail = ({ route, navigation }) => {
                     nestedScrollEnabled={true}>
                         {/* {renderTitle()} */}
                         {renderInfoTask()}
+                        {renderNote()}
                         {renderStage()}
                         {(data.TOTAL_FILE > 0) && (renderFileSignature())}
                         {renderUserSignature()}

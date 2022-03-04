@@ -164,7 +164,7 @@ const List = ({ route, navigation }) => {
                     : null)}
                 renderItem={({item}) => {
                     return(
-                        <ItemSign item={item} />
+                        <ItemSign item={item} navigation={navigation}/>
                     );
                 }
             }/>
